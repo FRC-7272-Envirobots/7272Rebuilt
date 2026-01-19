@@ -21,8 +21,8 @@ public class MaxSwerveModule {
   private final StatusSignal<Angle> m_drivingEncoder;
   private final StatusSignal<Angle> m_turningEncoder;
 
-  private final StatusSignal<Double> m_drivingClosedLoopController;
-  private final StatusSignal<Double> m_turningClosedLoopController;
+  private final TalonFX m_drivingClosedLoopController;
+  private final TalonFXS m_turningClosedLoopController;
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -40,8 +40,8 @@ public class MaxSwerveModule {
     m_drivingEncoder = m_drivingSpark.getRotorPosition();
     m_turningEncoder = m_turningSpark.getRotorPosition();
 
-    m_drivingClosedLoopController = m_drivingSpark.getClosedLoopOutput();
-    m_turningClosedLoopController = m_turningSpark.getClosedLoopOutput();
+    m_drivingClosedLoopController = m_drivingSpark;
+    m_turningClosedLoopController = m_turningSpark;
 
     // Apply the respective configurations to the SPARKS. Reset parameters before
     // applying the configuration to bring the SPARK to a known good state. Persist
@@ -88,17 +88,23 @@ public class MaxSwerveModule {
     // Apply chassis angular offset to the desired state.
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
-    correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
+    correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromDegrees(m_chassisAngularOffset));
 
     // Optimize the reference state to avoid spinning further than 90 degrees.
     //correctedDesiredState.optimize(new Rotation2d((Angle) m_turningSpark.getPosition()));
 
     // // Command driving and turning SPARKS towards their respective setpoints.
-    // m_drivingClosedLoopController.setSetpoint(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
-    // m_turningClosedLoopController.setSetpoint(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
+    System.out.println(correctedDesiredState.speedMetersPerSecond);
+    //System.out.println(m_chassisAngularOffset);
+    // m_drivingClosedLoopController.set(desiredState.speedMetersPerSecond);
+      m_drivingSpark.set(desiredState.speedMetersPerSecond/10);
+      m_turningSpark.set(desiredState.speedMetersPerSecond/10);
 
     m_desiredState = desiredState;
+
+    
   }
+ 
 
   /** Zeroes all the SwerveModule encoders. */
 //   public void resetEncoders() {

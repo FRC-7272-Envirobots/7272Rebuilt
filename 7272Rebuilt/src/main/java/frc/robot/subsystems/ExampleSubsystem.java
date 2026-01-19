@@ -68,7 +68,7 @@ public class ExampleSubsystem extends SubsystemBase {
   // System.out.println(turnangle);
   }
   public void turnexm(){
-    llt.set(0.1);
+    llt.set(0.33);
     
   }
    public void dexm(){
