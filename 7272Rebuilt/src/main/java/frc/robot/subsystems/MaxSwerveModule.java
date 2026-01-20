@@ -10,7 +10,11 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
+
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.TalonFXS;
 
@@ -23,6 +27,8 @@ public class MaxSwerveModule {
 
   private final TalonFX m_drivingClosedLoopController;
   private final TalonFXS m_turningClosedLoopController;
+
+  private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0);
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -42,6 +48,8 @@ public class MaxSwerveModule {
 
     m_drivingClosedLoopController = m_drivingSpark;
     m_turningClosedLoopController = m_turningSpark;
+
+    
 
     // Apply the respective configurations to the SPARKS. Reset parameters before
     // applying the configuration to bring the SPARK to a known good state. Persist
@@ -78,6 +86,12 @@ public class MaxSwerveModule {
     // relative to the chassis.
     return new SwerveModulePosition();
   }
+  //  public SwerveModulePosition getPosition(){
+  //       return new SwerveModulePosition(
+  //           Conversions.rotationsToMeters(m_drivingSpark.getPosition().getValue(), DriveConstants.kWheelBase), 
+  //           Rotation2d.fromRotations(m_turningSpark.getPosition())
+  //       );
+  //   }
 
   /**
    * Sets the desired state for the module.
@@ -94,11 +108,16 @@ public class MaxSwerveModule {
     //correctedDesiredState.optimize(new Rotation2d((Angle) m_turningSpark.getPosition()));
 
     // // Command driving and turning SPARKS towards their respective setpoints.
-    System.out.println(correctedDesiredState.speedMetersPerSecond);
-    //System.out.println(m_chassisAngularOffset);
+    //System.out.println(correctedDesiredState.speedMetersPerSecond);
+    System.out.println(correctedDesiredState.angle.getRadians());
     // m_drivingClosedLoopController.set(desiredState.speedMetersPerSecond);
-      m_drivingSpark.set(desiredState.speedMetersPerSecond/10);
-      m_turningSpark.set(desiredState.speedMetersPerSecond/10);
+     // m_drivingSpark.set(desiredState.speedMetersPerSecond/10);
+     // m_turningSpark.set(correctedDesiredState.angle.getDegrees());
+
+       driveDutyCycle.Output = desiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond;
+            m_drivingSpark.setControl(driveDutyCycle);
+
+     
 
     m_desiredState = desiredState;
 
