@@ -1,0 +1,27 @@
+{
+  "location": {
+    "front": 11.5,
+    "left": -11.5
+  },
+  "absoluteEncoderOffset": 83.9,
+  "drive": {
+    "type": "krakenx60",
+    "id": 8,
+    "canbus": null
+  },
+  "angle": {
+    "type": "talonfxs_minion",
+    "id": 7,
+    "canbus": null
+  },
+  "encoder": {
+    "type": "throughbore",
+    "id": 8,
+    "canbus": null
+  },
+  "inverted": {
+    "drive": false,
+    "angle": false
+  },
+  "absoluteEncoderInverted": false
+}
