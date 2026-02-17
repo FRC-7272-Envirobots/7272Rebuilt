@@ -48,4 +48,12 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
   }
+  public static class RobotConstants{
+    public static final int spindexerCan = 15;
+    public static final int IndexerCan = 16;
+    public static final int ArmCan = 17; 
+    public static final int IntakeCan = 18;
+    public static final int ShooterRcan = 19;
+    public static final int ShooterLcan = 20;
+  }
 }
