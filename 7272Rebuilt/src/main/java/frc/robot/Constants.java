@@ -56,4 +56,9 @@ public final class Constants
     public static final int ShooterRcan = 19;
     public static final int ShooterLcan = 20;
   }
+
+  public static class SwerveConstant{
+ 
+
+  }
 }

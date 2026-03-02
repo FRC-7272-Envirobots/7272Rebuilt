@@ -13,6 +13,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,11 +26,17 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.LightstripEnvirobots;
 import frc.robot.subsystems.Indexing_Subsystem;
+import frc.robot.subsystems.Intake_Subsystem;
+import frc.robot.subsystems.Lightstrip;
 import frc.robot.subsystems.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 import java.io.File;
+
+
+
 import swervelib.SwerveInputStream;
 
 /**
@@ -41,6 +48,8 @@ public class RobotContainer
 {
     private final Indexing_Subsystem m_indexer = new Indexing_Subsystem();
     private final Shooter_Subsystem m_shooter = new Shooter_Subsystem();
+    private final Intake_Subsystem m_intake = new Intake_Subsystem();
+    private final Lightstrip m_Lightstrip0 = new Lightstrip(0);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final        CommandXboxController driverXbox = new CommandXboxController(0);
     public static XboxController m_driverController = new XboxController(0);
@@ -49,7 +58,7 @@ public class RobotContainer
                                                                                 "swerve/neo"));
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
-  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+ private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -107,8 +116,21 @@ public class RobotContainer
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+
+
+  //private final SendableChooser<Command> autoChooser;
   public RobotContainer()
   {
+
+       m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
+                // m_Lightstrip1.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip1));
+                // Configure the button bindings
+                configureButtonBindings();
+    
+         
+        //  autoChooser = AutoBuilder.buildAutoChooser();
+        //         SmartDashboard.putData("Auto Chooser", autoChooser);
+
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -138,13 +160,27 @@ public class RobotContainer
   private void configureBindings()
   {
 
-     new JoystickButton(m_driverController,XboxController.Button.kA.value)
-        .whileTrue(new RunCommand(()->m_indexer.spindexer_run(),m_indexer))
-        .whileFalse(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer));
+    //  new JoystickButton(m_driverController,XboxController.Button.kA.value)
+    //     .whileTrue(new RunCommand(()->m_indexer.spindexer_run(),m_indexer))
+    //     .whileFalse(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer));
 
-      new JoystickButton(m_driverController, XboxController.Button.kB.value)
-        .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter))
-        .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
+    //   new JoystickButton(m_driverController, XboxController.Button.kB.value)
+    //     .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter))
+    //     .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
+
+    //   new JoystickButton(m_driverController,XboxController.Button.kY.value)
+    //     .whileTrue(new RunCommand(()->m_indexer.indexer_run(),m_indexer))
+    //     .whileFalse(new RunCommand(()->m_indexer.indexer_stop(),m_indexer));
+
+      new JoystickButton(m_driverController,XboxController.Button.kX.value)
+        .whileTrue(new RunCommand(()->m_intake.intake_run(),m_intake))
+        .whileFalse(new RunCommand(()->m_intake.intake_stop(),m_intake));
+
+    //  new JoystickButton(m_driverController, XboxController.Button.kA.value)
+    //   .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter) .andThen(new RunCommand(()->m_indexer.indexer_run(),m_indexer)).andThen(new RunCommand(()->m_indexer.indexer_run(),m_indexer)))
+    //   .whileFalse(new RunCommand(()->m_indexer.indexer_stop(),m_indexer).andThen(new RunCommand(()->m_shooter.stopShooter(), m_shooter)).andThen(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer)));
+
+  
         
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
