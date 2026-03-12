@@ -17,7 +17,6 @@
 // import static edu.wpi.first.units.Units.Volts;
 
 // import com.revrobotics.spark.SparkLowLevel.MotorType;
-// import com.ctre.phoenix6.hardware.TalonFX;
 // import com.revrobotics.spark.SparkMax;
 
 // import edu.wpi.first.math.controller.ArmFeedforward;
@@ -60,18 +59,18 @@
 //   .withStatorCurrentLimit(Amps.of(40));
 
 //   // Vendor motor controller object
-//   private TalonFX motor = new TalonFX(4);
+//   private SparkMax spark = new SparkMax(4, MotorType.kBrushless);
 
 //   // Create our SmartMotorController from our Spark and config with the NEO.
-//   //private SmartMotorController sparkSmartMotorController = new SparkWrapper(motor, DCMotor.getNEO(1), smcConfig);
+//   private SmartMotorController sparkSmartMotorController = new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
 
-//  private final FlyWheelConfig shooterConfig = new FlyWheelConfig()
+//  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(sparkSmartMotorController)
 //   // Diameter of the flywheel.
 //   .withDiameter(Inches.of(4))
 //   // Mass of the flywheel.
 //   .withMass(Pounds.of(1))
 //   // Maximum speed of the shooter.
-//   .withUpperSoftLimit(RPM.of(500))
+//   .withUpperSoftLimit(RPM.of(1000))
 //   // Telemetry name and verbosity for the arm.
 //   .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
@@ -100,7 +99,13 @@
 //    */
 //   public void setVelocitySetpoint(AngularVelocity speed) {shooter.setMechanismVelocitySetpoint(speed);}
   
-
+//   /**
+//    * Set the shooter velocity.
+//    *
+//    * @param speed Speed to set.
+//    * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
+//    */
+//   //public Command setVelocity(AngularVelocity speed) {return shooter.run(speed);}
 
 //   /**
 //    * Set the dutycycle of the shooter.

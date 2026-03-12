@@ -26,11 +26,15 @@ public class Intake_Subsystem extends SubsystemBase {
     public Command intake_down(){
         if (down == false){
             m_intakeArm.set(0.2);
-           m_intakeArm.set(0);
+           down = true;
         }
         else{
             m_intakeArm.set(0);
         }
+        return null;
+    }
+    public Command armstop(){
+        m_intakeArm.set(0);
         return null;
     }
     public Command wiggle(){
@@ -41,7 +45,7 @@ public class Intake_Subsystem extends SubsystemBase {
         return null;
     }
     public Command intake_run(){
-        m_intakespin.set(0.6);
+        m_intakespin.set(-0.8);
         return null;
     }
     public Command intake_stop(){

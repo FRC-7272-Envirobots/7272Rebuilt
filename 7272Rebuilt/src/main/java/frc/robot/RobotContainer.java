@@ -53,6 +53,7 @@ public class RobotContainer
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final        CommandXboxController driverXbox = new CommandXboxController(0);
     public static XboxController m_driverController = new XboxController(0);
+    Joystick m_psoc = new Joystick(1);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
@@ -160,23 +161,33 @@ public class RobotContainer
   private void configureBindings()
   {
 
-    //  new JoystickButton(m_driverController,XboxController.Button.kA.value)
-    //     .whileTrue(new RunCommand(()->m_indexer.spindexer_run(),m_indexer))
-    //     .whileFalse(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer));
+     new JoystickButton(m_psoc,9)
+        .whileTrue(new RunCommand(()->m_indexer.spindexer_run(),m_indexer))
+        .whileFalse(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer));
 
-    //   new JoystickButton(m_driverController, XboxController.Button.kB.value)
-    //     .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter))
-    //     .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
+      new JoystickButton(m_psoc, 10)
+        .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter))
+        .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
 
-    //   new JoystickButton(m_driverController,XboxController.Button.kY.value)
-    //     .whileTrue(new RunCommand(()->m_indexer.indexer_run(),m_indexer))
-    //     .whileFalse(new RunCommand(()->m_indexer.indexer_stop(),m_indexer));
+      new JoystickButton(m_psoc,11)
+        .whileTrue(new RunCommand(()->m_indexer.indexer_run(),m_indexer))
+        .whileFalse(new RunCommand(()->m_indexer.indexer_stop(),m_indexer));
 
       new JoystickButton(m_driverController,XboxController.Button.kX.value)
         .whileTrue(new RunCommand(()->m_intake.intake_run(),m_intake))
         .whileFalse(new RunCommand(()->m_intake.intake_stop(),m_intake));
 
-    //  new JoystickButton(m_driverController, XboxController.Button.kA.value)
+      new JoystickButton(m_driverController,XboxController.Button.kA.value)
+        .whileTrue(new RunCommand(()->m_intake.intake_down(),m_intake))
+        .whileFalse(new RunCommand(()->m_intake.armstop(),m_intake));
+
+      new JoystickButton(m_psoc,13)
+        .whileTrue(new RunCommand(()->m_shooter.setspeed(100), m_shooter))
+        .whileFalse(new RunCommand(()->m_shooter.setspeed(0), m_shooter));
+      
+      
+
+    // new JoystickButton(m_psoc, 12)
     //   .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter) .andThen(new RunCommand(()->m_indexer.indexer_run(),m_indexer)).andThen(new RunCommand(()->m_indexer.indexer_run(),m_indexer)))
     //   .whileFalse(new RunCommand(()->m_indexer.indexer_stop(),m_indexer).andThen(new RunCommand(()->m_shooter.stopShooter(), m_shooter)).andThen(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer)));
 
