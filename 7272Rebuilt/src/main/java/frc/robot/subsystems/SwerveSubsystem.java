@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -20,12 +21,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.LimelightHelpers.RawFiducial;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -45,6 +52,8 @@ public class SwerveSubsystem extends SubsystemBase
    * Swerve drive object.
    */
   private final SwerveDrive swerveDrive;
+
+  public final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -122,8 +131,99 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic()
   {
-    
+
+
+        // m_DrivePoseEstimator.update(
+        // Rotation2d.fromDegrees(getGyroHeading()),
+        // new SwerveModulePosition[] {
+        //     m_frontLeft.getPosition(),
+        //     m_frontRight.getPosition(),
+        //     m_rearLeft.getPosition(),
+        //     m_rearRight.getPosition()
+        // });
+    // boolean doRejectUpdate = false;
+
+    // System.out.println("outtake robot camera pose settings: \n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_X_OFFSET.in(Meters) + " m x\n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_Y_OFFSET.in(Meters) + " m y\n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_Z_OFFSET.in(Meters) + " m z\n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees) + " deg
+    // roll \n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees) + " deg
+    // pitch\n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees) + " deg
+    // yaw"
+    // );
+
+   
+    // LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME, getEstimatedHeading(), 0, 0,
+    //     0, 0, 0);
+
+
+    LimelightHelpers.PoseEstimate outtakePoseEstimate = LimelightHelpers
+        .getBotPoseEstimate_wpiBlue(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
+
+   
+
+    if ( Math.abs(getGyroYawRate()) > 720) {
+      // skip pose estimate
+    } else {
+      // m_DrivePoseEstimator.addVisionMeasurement(
+      //     bestEstimate.pose,
+      //     bestEstimate.timestampSeconds);
+    }
+   // drivefield.setRobotPose(m_DrivePoseEstimator.getEstimatedPosition());
+
   }
+
+  private static LimelightHelpers.PoseEstimate filterPoseEstimate(LimelightHelpers.PoseEstimate pose) {
+
+    if (pose == null) {
+      return null;
+    }
+    if (pose.tagCount == 0) {
+      return null;
+    } else {
+      boolean hastagcloseenough = false;
+      for (RawFiducial tag : pose.rawFiducials) {
+        // .println(tag.distToRobot)System.out;
+        if (tag.distToRobot < 3.48) {
+          hastagcloseenough = true;
+        }
+      }
+      if (!hastagcloseenough) {
+        return null;
+      }
+    }
+
+    return pose;
+  }
+
+  // returns null if no pose estimate should be used, or returns the best pose
+  // estimate to use
+  private static LimelightHelpers.PoseEstimate pickBestPoseEstimate(LimelightHelpers.PoseEstimate pose1) {
+    if ((pose1 == null || pose1.tagCount == 0) ) {
+      // System.out.println("Skipping vision estimate because both are null");
+      return null;
+    }
+    else{
+      return pose1;
+    }
+   
+
+    // if (pose1.avgTagDist < pose2.avgTagDist) {
+    //   System.out.println("using intake camera because it is closer");
+    //   return pose1;
+    // } else {
+    //   System.out.println("using outtake camera because it is closer");
+    //   return pose2;
+    // }
+  }
+
+     public double getGyroYawRate() {
+    return m_gyro.getRate() * (VisionConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+  
 
   @Override
   public void simulationPeriodic()

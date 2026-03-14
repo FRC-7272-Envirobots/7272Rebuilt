@@ -4,8 +4,16 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
+import java.util.Map;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import swervelib.math.Matter;
 
 /**
@@ -61,4 +69,28 @@ public final class Constants
  
 
   }
+    public static final class VisionConstants {
+    // public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
+    // public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Distance.ofBaseUnits(14,
+    // Inches); // front to back from center
+    // public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Distance.ofBaseUnits(3,
+    // Inches); // left to right from center
+    // public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Distance.ofBaseUnits(9,
+    // Inches);
+    // public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Angle.ofBaseUnits(0,
+    // Degrees);
+    // public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Angle.ofBaseUnits(-45,
+    // Degrees);
+    // public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Angle.ofBaseUnits(0,
+    // Degrees);
+    public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
+    public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Inches.of(11.700482); // front to back from center
+    public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Inches.of(- 8.009224); // left to right from center
+    public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Inches.of(13.187444);
+    public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Degrees.of(0);
+    public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Degrees.of(15);
+    public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Degrees.of(0);
+     public static final boolean kGyroReversed = false;
+}
+    public static final Map<AutoDestination, Pose2d> blueAuto_Map = Map.ofEntries();
 }

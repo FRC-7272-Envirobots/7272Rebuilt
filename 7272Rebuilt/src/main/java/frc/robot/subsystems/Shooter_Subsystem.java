@@ -2,13 +2,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
@@ -22,10 +17,11 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     public Shooter_Subsystem(){
 
-      //  right_Follower = new Follower(m_RightShooter.getDeviceID(), null);`
+     //m_RightShooter.setControl(new Follower(m_LeftShooter.getDeviceID(), null));
+    //  right_Follower = new Follower(RobotConstants.ShooterLcan, null);
+    //     m_RightShooter.setControl(right_Follower);
 
-
-       //  m_RightShooter.setControl(right_Follower);
+         
 
 
        config = new TalonFXConfiguration();
@@ -53,6 +49,7 @@ public class Shooter_Subsystem extends SubsystemBase {
                                                                                                    // .1
                                                                                            
 
+      m_LeftShooter.getConfigurator().apply(config);
 
     }
 
@@ -62,17 +59,30 @@ public class Shooter_Subsystem extends SubsystemBase {
 
    
     public final void  setspeed(double velocityVoltage){
-        final MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(velocityVoltage);
-    }
+         MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(velocityVoltage);
+        m_LeftShooter.setControl(m_request);
+        m_RightShooter.setControl(m_request);
         
- public Command spinup(){
-        m_LeftShooter.set(-0.8);
-        m_RightShooter.set(0.8);
-     return null;}
-
-    public Command stopShooter(){
-        m_LeftShooter.set(0);
-        m_RightShooter.set(0);
-        return null;
     }
+        private int shswitch = 1; 
+ public Command shooter_run(double speed){
+        m_LeftShooter.set(-speed *shswitch);
+        m_RightShooter.set(speed * shswitch);
+     return null;}
+  // public Command shturn(){
+  //   if(shswitch == 1){
+  //     shswitch =0;
+  //   }
+  //   else{
+  //     shswitch =1;
+  //   }
+  //   return null;
+  // }
+
+     //DEL
+    // // public Command stopShooter(){
+    // //     m_LeftShooter.set(0);
+    // //     m_RightShooter.set(0);
+    // //     return null;
+    // }
 }

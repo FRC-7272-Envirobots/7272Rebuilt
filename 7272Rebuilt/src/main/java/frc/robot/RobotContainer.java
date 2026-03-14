@@ -1,4 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
+  // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -161,35 +161,37 @@ public class RobotContainer
   private void configureBindings()
   {
 
-     new JoystickButton(m_psoc,9)
-        .whileTrue(new RunCommand(()->m_indexer.spindexer_run(),m_indexer))
-        .whileFalse(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer));
+     new JoystickButton(m_driverController,XboxController.Button.kA.value)
+       // .onTrue(m_indexer.runOnce(()->m_indexer.spturn()))
+        .whileTrue(new RunCommand(()->m_indexer.spindexer_run(1),m_indexer))
+        .whileFalse(new RunCommand(()->m_indexer.spindexer_run(0),m_indexer));
 
-      new JoystickButton(m_psoc, 10)
-        .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter))
-        .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
+      new JoystickButton(m_driverController,XboxController.Button.kY.value)
+        .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.2),m_shooter))
+        .whileFalse(new RunCommand(()->m_shooter.shooter_run(0), m_shooter));
 
-      new JoystickButton(m_psoc,11)
-        .whileTrue(new RunCommand(()->m_indexer.indexer_run(),m_indexer))
-        .whileFalse(new RunCommand(()->m_indexer.indexer_stop(),m_indexer));
+      new JoystickButton(m_driverController,XboxController.Button.kB.value)
+      // .onTrue(new RunCommand(()->m_indexer.spturn(),m_indexer))
+        .whileTrue(new RunCommand(()->m_indexer.indexer_run(.5),m_indexer))
+        .whileFalse(new RunCommand(()->m_indexer.indexer_run(0),m_indexer));
 
       new JoystickButton(m_driverController,XboxController.Button.kX.value)
-        .whileTrue(new RunCommand(()->m_intake.intake_run(),m_intake))
-        .whileFalse(new RunCommand(()->m_intake.intake_stop(),m_intake));
+        .whileTrue(new RunCommand(()->m_intake.intake_run(0.8),m_intake))
+        .whileFalse(new RunCommand(()->m_intake.intake_run(0),m_intake));
 
-      new JoystickButton(m_driverController,XboxController.Button.kA.value)
-        .whileTrue(new RunCommand(()->m_intake.intake_down(),m_intake))
-        .whileFalse(new RunCommand(()->m_intake.armstop(),m_intake));
+      // new JoystickButton(m_driverController,XboxController.Button.kA.value)
+      //   .whileTrue(new RunCommand(()->m_intake.intake_arm(0.5),m_intake))
+      //   .whileFalse(new RunCommand(()->m_intake.armstop(),m_intake));
 
-      new JoystickButton(m_psoc,13)
-        .whileTrue(new RunCommand(()->m_shooter.setspeed(100), m_shooter))
+      new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
+        .whileTrue(new RunCommand(()->m_shooter.setspeed(1000), m_shooter))
         .whileFalse(new RunCommand(()->m_shooter.setspeed(0), m_shooter));
       
       
 
-    // new JoystickButton(m_psoc, 12)
-    //   .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter) .andThen(new RunCommand(()->m_indexer.indexer_run(),m_indexer)).andThen(new RunCommand(()->m_indexer.indexer_run(),m_indexer)))
-    //   .whileFalse(new RunCommand(()->m_indexer.indexer_stop(),m_indexer).andThen(new RunCommand(()->m_shooter.stopShooter(), m_shooter)).andThen(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer)));
+    // new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
+    //   .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.2),m_shooter) .andThen(new RunCommand(()->m_indexer.spindexer_run(1),m_indexer)).andThen(new RunCommand(()->m_indexer.indexer_run(.5),m_indexer)))
+    //   .whileFalse(new RunCommand(()->m_indexer.indexer_run(0),m_indexer).andThen(new RunCommand(()->m_shooter.shooter_run(0), m_shooter)).andThen(new RunCommand(()->m_indexer.spindexer_run(0),m_indexer)));
 
   
         
