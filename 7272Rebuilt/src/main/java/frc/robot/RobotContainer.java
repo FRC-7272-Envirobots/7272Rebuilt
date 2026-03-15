@@ -178,14 +178,20 @@ public class RobotContainer
       new JoystickButton(m_driverController,XboxController.Button.kX.value)
         .whileTrue(new RunCommand(()->m_intake.intake_run(0.8),m_intake))
         .whileFalse(new RunCommand(()->m_intake.intake_run(0),m_intake));
+      new JoystickButton(m_driverController,XboxController.Button.kLeftBumper.value)
+        .whileTrue(new RunCommand(()->m_intake.armdown(),m_intake))
+        .whileFalse(new RunCommand(()->m_intake.armstop(), m_intake));
+     new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
+        .whileTrue(new RunCommand(()->m_intake.armup(),m_intake))
+        .whileFalse(new RunCommand(()->m_intake.armstop(), m_intake));
 
       // new JoystickButton(m_driverController,XboxController.Button.kA.value)
       //   .whileTrue(new RunCommand(()->m_intake.intake_arm(0.5),m_intake))
       //   .whileFalse(new RunCommand(()->m_intake.armstop(),m_intake));
 
-      new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
-        .whileTrue(new RunCommand(()->m_shooter.setspeed(1000), m_shooter))
-        .whileFalse(new RunCommand(()->m_shooter.setspeed(0), m_shooter));
+      // new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
+      //   .whileTrue(new RunCommand(()->m_shooter.setspeed(1000), m_shooter))
+      //   .whileFalse(new RunCommand(()->m_shooter.setspeed(0), m_shooter));
       
       
 
@@ -248,7 +254,7 @@ public class RobotContainer
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.start().whileTrue(Commands.none());
       driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+     // driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
     }
 

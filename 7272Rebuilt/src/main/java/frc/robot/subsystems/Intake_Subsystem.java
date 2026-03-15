@@ -23,16 +23,16 @@ public class Intake_Subsystem extends SubsystemBase {
 
     }
     public int inswitch =1;
-    public Command intake_arm(double speed){
-        if (down == false){
-            m_intakeArm.set(speed);
-           down = true;
-        }
-        else{
-            m_intakeArm.set(-speed);
-        }
-        return null;
-    }
+    // public Command intake_arm(double speed){
+    //     if (down == false){
+    //         m_intakeArm.set(speed);
+    //        down = true;
+    //     }
+    //     else{
+    //         m_intakeArm.set(-speed);
+    //     }
+    //     return null;
+    // }
     
     public Command armstop(){
         m_intakeArm.set(0);
@@ -47,6 +47,14 @@ public class Intake_Subsystem extends SubsystemBase {
     }
     public Command intake_run(double speed ){
         m_intakespin.set(speed * inswitch);
+        return null;
+    }
+    public Command armdown(){
+        m_intakeArm.set(-0.2);
+        return null;
+    }
+    public Command armup(){
+        m_intakeArm.set(0.2);
         return null;
     }
     // public Command inturn(){
