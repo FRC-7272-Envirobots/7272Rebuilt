@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import frc.robot.Constants.FieldPositions;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -59,7 +62,7 @@ public class RobotContainer
                                                                                 "swerve/neo"));
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
- private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+ private final SendableChooser<Command> autoChooser;
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -129,8 +132,8 @@ public class RobotContainer
                 configureButtonBindings();
     
          
-        //  autoChooser = AutoBuilder.buildAutoChooser();
-        //         SmartDashboard.putData("Auto Chooser", autoChooser);
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -145,6 +148,8 @@ public class RobotContainer
                                                 .andThen(drivebase.driveForward().withTimeout(1)));
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    //As of writing the code above, pathplanner is not configured yet, so cannot change it
 
     if (autoChooser.getSelected() == null ) {
     RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
@@ -246,8 +251,14 @@ public class RobotContainer
     } else
     {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.start().whileTrue(Commands.none());
-      driverXbox.back().whileTrue(Commands.none());
+      
+      // Hold START to pathfind to the center scoring position.
+      // Change FieldPositions.SCORE_CENTER to any other pose as needed.
+      driverXbox.start().whileTrue(alignToPose(FieldPositions.SCORE_CENTER));
+
+      // Hold BACK to pathfind to the left scoring position.
+      driverXbox.back().whileTrue(alignToPose(FieldPositions.SCORE_LEFT));
+      
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
     }
@@ -259,6 +270,24 @@ public class RobotContainer
    *
    * @return the command to run in autonomous
    */
+  /**
+   * Creates a command that pathfinds the robot to a target scoring pose.
+   * Uses pathplanner's on the fly path generation
+   * 
+   * @param targetPose The field-relative pose to drive to (Blue alliance origin).
+   * @return A command that drives the robot to the target.
+   */
+  private Command alignToPose(Pose2d targetPose) {
+    //Controls how quickly and aggressively the robot moves during alignment
+    PathConstraints constraints = new PathConstraints(
+      3.0,    //Max velocity (m/s), slower than full speed (about 70%) for precision 
+      3.0,    // max acceleration (m/s^2)
+        Units.degreesToRadians(540),  // max angular velocity (rad/s)
+        Units.degreesToRadians(720)   // max angular acceleration (rad/s^2)
+    );
+    return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0 //Goal end velocity (m/s) -- stop at the target
+    );
+  }
   public Command getAutonomousCommand()
   {
     // Pass in the selected auto from the SmartDashboard as our desired autnomous commmand 
