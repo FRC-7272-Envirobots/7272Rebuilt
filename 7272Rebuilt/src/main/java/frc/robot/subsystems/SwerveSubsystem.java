@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meter;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -23,13 +25,19 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.LimelightHelpers.RawFiducial;
+import limelight.Limelight;
+import limelight.networktables.target.pipeline.NeuralClassifier;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -45,8 +53,26 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase
-{
+
+Limelight = new limelight("limelight_Shooter");
+
+// Get target data
+limelight.getLatestResults().ifPresent((LimelightResults result) -> {
+    for (NeuralClassifier object : result.targets_Classifier)
+    {
+        // Classifier says its a algae.
+        if (object.className.equals("algae"))
+        {
+            // Check pixel location of algae.
+            if (object.ty > 2 && object.ty < 1)
+            {
+              // Algae is valid! do stuff!
+            }
+        }
+    }
+});
   
+
   
   /**
    * Swerve drive object.
@@ -62,10 +88,10 @@ public class SwerveSubsystem extends SubsystemBase
    */
 
     private final Field2d drivefield = new Field2d();
+
     
    public SwerveSubsystem(File directory)
   { 
-
      SmartDashboard.putData("Field", drivefield);
 
     PathPlannerLogging.setLogActivePathCallback((poses) -> {
@@ -75,8 +101,6 @@ public class SwerveSubsystem extends SubsystemBase
       drivefield.setRobotPose(pose);
     });
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> drivefield.getObject("target pose").setPose(pose));
-
-
 
    // SmartDashboard.putData("Field", drivefield);
 
@@ -91,10 +115,6 @@ public class SwerveSubsystem extends SubsystemBase
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try
     {
-      
-
-
-
 
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED, startingPose);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
@@ -111,6 +131,49 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
     // swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
+
+    //==NEW: Tells the Limelight where the camera is mounted on the robot (meters and degrees)==
+    //Parameters: forward, side, up, roll, pitch, yaw
+    LimelightHelpers.setCameraPose_RobotSpace(
+        Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
+        Constants.VisionConstants.OUTTAKE_LIMELIGHT_X_OFFSET.in(Inches) * 0.0254,
+        Constants.VisionConstants.OUTTAKE_LIMELIGHT_Y_OFFSET.in(Inches) * 0.0254,
+        Constants.VisionConstants.OUTTAKE_LIMELIGHT_Z_OFFSET.in(Inches) * 0.0254,
+        Constants.VisionConstants.OUTTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees),
+        Constants.VisionConstants.OUTTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees),
+        Constants.VisionConstants.OUTTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees)
+    );
+    // Configure robot's autobuilder for autonomous path following
+    RobotConfig config;
+    try {
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      e.printStackTrace();
+      config = null;
+    } //Tries to fetch robot's configuration from GUI settings, and in the event of error, it nullifies the config
+    // Fetches robot's current config from PathPlanner (GUI)
+    if( config != null) {
+      AutoBuilder.configure(
+        this::getpose,
+        this::resetOdometry,
+        this::getRobotVelocity,
+        (speeds, feedFowrards) -> setChassis(speeds),
+        new PPHolonomicDriveController(
+          new PIDConstants(
+            Constants.AutonConstants.TRANSLATION_P,
+            Constants.AutonConstants.TRANSLATION_I,
+            Constants.AutonConstants.TRANSLATION_D),
+          new PIDConstants(
+            Constants.AutonConstants.ROTATION_P,
+            Constants.AutonConstants.ROTATION_I,
+            Constants.AutonConstants.ROTATION_D)
+        ),
+        config,
+        () -> isRedAlliance(),
+        this
+      );
+    }
+    //END NEW
   }
 
   /**
@@ -130,6 +193,32 @@ public class SwerveSubsystem extends SubsystemBase
 
   @Override
   public void periodic()
+  {
+    //Feed the gyro heading into the limelight for MegaTag 2.
+    //MegaTag 2 uses the gyro to produce much more accurate multi-tag pose estimates.
+    LimelightHelpers.SetRobotOrientation(
+      Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
+      swerveDrive.getOdometryHeading().getDegrees,
+      0,0,0,0,0
+    );
+
+    //Read the MegaTag 2 pose estimate from the limelight.
+    LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers
+    .getBotPoseEstimate_wpiBlue_MegaTag2(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
+
+    //Filter: reject if null, no tags, or all tags too far away.
+    poseEstimate = filterPoseEstimate(poseEstimate);
+
+    //Only fuse vision if gyro is not spinning too fast (high rotation = blurry image)
+    if (poseEstimate != null && Math.abs(getGyroYawRate()) <= 720){
+      swerveDrive.addVisionMeasurement(
+        poseEstimate.pose,
+        poseEstimate.timestampSeconds
+      );
+    }
+  }
+
+
   {
 
 

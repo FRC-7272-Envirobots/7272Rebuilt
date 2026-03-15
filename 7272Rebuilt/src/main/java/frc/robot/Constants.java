@@ -7,14 +7,25 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
+import java.time.InstantSource;
 import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import swervelib.math.Matter;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Degrees;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PathFollowingController;
+import com.pathplanner.lib.config.PIDConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This
@@ -31,14 +42,38 @@ public final class Constants
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
   public static final double MAX_SPEED  = Units.feetToMeters(14.5);
+
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
-//  public static final class AutonConstants
-//  {
-//
-//    public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
-//    public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
-//  }
+public static final class AutonConstants {
+  //Initial PID values for autonomous mode
+  public static final double TRANSLATION_P = 5.0;
+  public static final double TRANSLATION_I = 0.0;
+  public static final double TRANSLATION_D = 0.0;
+
+  public static final double ROTATION_P = 5.0;
+  public static final double ROTATION_I = 0.0;
+  public static final double ROTATION_D = 0.0;
+}
+
+public static final class FieldPositions{
+  //First step replaces the score left pose with new values
+  //Initial field positions for autonomous mode
+  public static final Pose2d SCORE_LEFT = new Pose2d(
+    new Translation2d(1.5, 1.0),
+    Rotation2d.fromDegrees(0)
+  );
+
+  public static final Pose2d SCORE_CENTER = new Pose2d(
+    new Translation2d(1.5, 2.5),
+    Rotation2d.fromDegrees(0)
+  );
+
+  public static final Pose2d SCORE_RIGHT = new Pose2d(
+    new Translation2d(1.5, 4.0),
+    Rotation2d.fromDegrees(0)
+  );
+}
 
   public static final class DrivebaseConstants
   {
