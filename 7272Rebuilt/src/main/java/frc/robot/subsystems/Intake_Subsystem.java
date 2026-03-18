@@ -34,29 +34,18 @@ public class Intake_Subsystem extends SubsystemBase {
     //     return null;
     // }
     
-    public Command armstop(){
-        m_intakeArm.set(0);
+   
+    public Command armmove(double speed){
+        m_intakeArm.set(speed);
         return null;
     }
-    public Command wiggle(){
-        if (down == true){
-            m_intakeArm.set(-0.2);
-            m_intakeArm.set(0);
-        }
-        return null;
-    }
+
     public Command intake_run(double speed ){
         m_intakespin.set(speed * inswitch);
         return null;
     }
-    public Command armdown(){
-        m_intakeArm.set(-0.2);
-        return null;
-    }
-    public Command armup(){
-        m_intakeArm.set(0.2);
-        return null;
-    }
+
+  
     // public Command inturn(){
     //     if (inswitch ==1){
     //         inswitch = 0;
@@ -66,10 +55,7 @@ public class Intake_Subsystem extends SubsystemBase {
     //     }
     //     return null; 
     // }
-    //DEL
-    // // public Command intake_stop(){
-    // //     m_intakespin.set(0);
-    // //     return null;
-    // }
+   
+
     
 }

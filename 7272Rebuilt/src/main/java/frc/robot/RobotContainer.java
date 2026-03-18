@@ -1,4 +1,4 @@
-  // Copyright (c) FIRST and other WPILib contributors.
+// Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -35,119 +36,121 @@ import frc.robot.subsystems.SwerveSubsystem;
 
 import java.io.File;
 
-
-
 import swervelib.SwerveInputStream;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
- * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
- * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a "declarative" paradigm, very
+ * little robot logic should actually be handled in the {@link Robot} periodic
+ * methods (other than the scheduler calls).
+ * Instead, the structure of the robot (including subsystems, commands, and
+ * trigger mappings) should be declared here.
  */
-public class RobotContainer
-{
-    private final Indexing_Subsystem m_indexer = new Indexing_Subsystem();
-    private final Shooter_Subsystem m_shooter = new Shooter_Subsystem();
-    private final Intake_Subsystem m_intake = new Intake_Subsystem();
-    private final Lightstrip m_Lightstrip0 = new Lightstrip(0);
+public class RobotContainer {
+  private final Indexing_Subsystem m_indexer = new Indexing_Subsystem();
+  private final Shooter_Subsystem m_shooter = new Shooter_Subsystem();
+  private final Intake_Subsystem m_intake = new Intake_Subsystem();
+  private final Lightstrip m_Lightstrip0 = new Lightstrip(0);
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  final        CommandXboxController driverXbox = new CommandXboxController(0);
-    public static XboxController m_driverController = new XboxController(0);
-    Joystick m_psoc = new Joystick(1);
+  final CommandXboxController driverXbox = new CommandXboxController(0);
+  public static XboxController m_driverController = new XboxController(0);
+  Joystick m_psoc = new Joystick(1);
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                                "swerve/neo"));
+  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+      "swerve/neo"));
 
-  // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
- private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  // Establish a Sendable Chooser that will be able to be sent to the
+  // SmartDashboard, allowing selection of desired auto
+  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   /**
-   * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
+   * Converts driver input into a field-relative ChassisSpeeds that is controlled
+   * by angular velocity.
    */
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                () -> driverXbox.getLeftY() * -1,
-                                                                () -> driverXbox.getLeftX() * -1)
-                                                            .withControllerRotationAxis(driverXbox::getRightX)
-                                                            .deadband(OperatorConstants.DEADBAND)
-                                                            .scaleTranslation(0.8)
-                                                            .allianceRelativeControl(true);
+      () -> driverXbox.getLeftY() * -1,
+      () -> driverXbox.getLeftX() * -1)
+      .withControllerRotationAxis(driverXbox::getRightX)
+      .deadband(OperatorConstants.DEADBAND)
+      .scaleTranslation(0.8)
+      .allianceRelativeControl(true);
 
   /**
-   * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
+   * Clone's the angular velocity input stream and converts it to a fieldRelative
+   * input stream.
    */
   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(driverXbox::getRightX,
-                                                                                             driverXbox::getRightY)
-                                                           .headingWhile(true);
+      driverXbox::getRightY)
+      .headingWhile(true);
 
   /**
-   * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
+   * Clone's the angular velocity input stream and converts it to a robotRelative
+   * input stream.
    */
   SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
-                                                             .allianceRelativeControl(false);
+      .allianceRelativeControl(false);
 
   SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                        () -> -driverXbox.getLeftY(),
-                                                                        () -> -driverXbox.getLeftX())
-                                                                    .withControllerRotationAxis(() -> driverXbox.getRawAxis(
-                                                                        2))
-                                                                    .deadband(OperatorConstants.DEADBAND)
-                                                                    .scaleTranslation(0.8)
-                                                                    .allianceRelativeControl(true);
+      () -> -driverXbox.getLeftY(),
+      () -> -driverXbox.getLeftX())
+      .withControllerRotationAxis(() -> driverXbox.getRawAxis(
+          2))
+      .deadband(OperatorConstants.DEADBAND)
+      .scaleTranslation(0.8)
+      .allianceRelativeControl(true);
   // Derive the heading axis with math!
-  SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.copy()
-                                                                               .withControllerHeadingAxis(() ->
-                                                                                                              Math.sin(
-                                                                                                                  driverXbox.getRawAxis(
-                                                                                                                      2) *
-                                                                                                                  Math.PI) *
-                                                                                                              (Math.PI *
-                                                                                                               2),
-                                                                                                          () ->
-                                                                                                              Math.cos(
-                                                                                                                  driverXbox.getRawAxis(
-                                                                                                                      2) *
-                                                                                                                  Math.PI) *
-                                                                                                              (Math.PI *
-                                                                                                               2))
-                                                                               .headingWhile(true)
-                                                                               .translationHeadingOffset(true)
-                                                                               .translationHeadingOffset(Rotation2d.fromDegrees(
-                                                                                   0));
+  SwerveInputStream driveDirectAngleKeyboard = driveAngularVelocityKeyboard.copy()
+      .withControllerHeadingAxis(() -> Math.sin(
+          driverXbox.getRawAxis(
+              2) *
+              Math.PI)
+          *
+          (Math.PI *
+              2),
+          () -> Math.cos(
+              driverXbox.getRawAxis(
+                  2) *
+                  Math.PI)
+              *
+              (Math.PI *
+                  2))
+      .headingWhile(true)
+      .translationHeadingOffset(true)
+      .translationHeadingOffset(Rotation2d.fromDegrees(
+          0));
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
 
+  // private final SendableChooser<Command> autoChooser;
+  public RobotContainer() {
 
-  //private final SendableChooser<Command> autoChooser;
-  public RobotContainer()
-  {
+    m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
+    // m_Lightstrip1.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip1));
+    // Configure the button bindings
+    configureButtonBindings();
 
-       m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
-                // m_Lightstrip1.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip1));
-                // Configure the button bindings
-                configureButtonBindings();
-    
-         
-        //  autoChooser = AutoBuilder.buildAutoChooser();
-        //         SmartDashboard.putData("Auto Chooser", autoChooser);
+    // autoChooser = AutoBuilder.buildAutoChooser();
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    //Set the default auto (do nothing) 
+    // Set the default auto (do nothing)
     autoChooser.setDefaultOption("Do Nothing", Commands.runOnce(drivebase::zeroGyroWithAlliance)
-                                                    .andThen(Commands.none()));
+        .andThen(Commands.none()));
 
-    //Add a simple auto option to have the robot drive forward for 1 second then stop
+    // Add a simple auto option to have the robot drive forward for 1 second then
+    // stop
     autoChooser.addOption("Drive Forward", Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2)
-                                                .andThen(drivebase.driveForward().withTimeout(1)));
-    //Put the autoChooser on the SmartDashboard
+        .andThen(drivebase.driveForward().withTimeout(1)));
+    // Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    if (autoChooser.getSelected() == null ) {
-    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
+    if (autoChooser.getSelected() == null) {
+      RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
     }
   }
 
@@ -161,46 +164,49 @@ public class RobotContainer
   private void configureBindings()
   {
 
-     new JoystickButton(m_driverController,XboxController.Button.kA.value)
-       // .onTrue(m_indexer.runOnce(()->m_indexer.spturn()))
-        .whileTrue(new RunCommand(()->m_indexer.spindexer_run(1),m_indexer))
-        .whileFalse(new RunCommand(()->m_indexer.spindexer_run(0),m_indexer));
+  // new JoystickButton(m_driverController,XboxController.Button.kB.value)  
+  //   .whileTrue(new RunCommand(()->m_intake.intake_run(0.8),m_intake));
 
-      new JoystickButton(m_driverController,XboxController.Button.kY.value)
-        .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.2),m_shooter))
-        .whileFalse(new RunCommand(()->m_shooter.shooter_run(0), m_shooter));
+  // new JoystickButton(m_driverController,XboxController.Button.kA.value)
+  //   .whileTrue(new RunCommand(()->m_intake.intake_run(0),m_intake));
 
-      new JoystickButton(m_driverController,XboxController.Button.kB.value)
-      // .onTrue(new RunCommand(()->m_indexer.spturn(),m_indexer))
-        .whileTrue(new RunCommand(()->m_indexer.indexer_run(.5),m_indexer))
-        .whileFalse(new RunCommand(()->m_indexer.indexer_run(0),m_indexer));
+  new JoystickButton(m_driverController, XboxController.Button.kY.value)
+    .whileTrue(new RunCommand(()->m_indexer.shoot(1,0.5),m_indexer));
 
-      new JoystickButton(m_driverController,XboxController.Button.kX.value)
-        .whileTrue(new RunCommand(()->m_intake.intake_run(0.8),m_intake))
-        .whileFalse(new RunCommand(()->m_intake.intake_run(0),m_intake));
-      new JoystickButton(m_driverController,XboxController.Button.kLeftBumper.value)
-        .whileTrue(new RunCommand(()->m_intake.armdown(),m_intake))
-        .whileFalse(new RunCommand(()->m_intake.armstop(), m_intake));
-     new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
-        .whileTrue(new RunCommand(()->m_intake.armup(),m_intake))
-        .whileFalse(new RunCommand(()->m_intake.armstop(), m_intake));
+  new JoystickButton(m_driverController,XboxController.Button.kX.value)
+    .whileTrue(new RunCommand(()->m_indexer.shoot(0, 0),m_indexer));
 
-      // new JoystickButton(m_driverController,XboxController.Button.kA.value)
-      //   .whileTrue(new RunCommand(()->m_intake.intake_arm(0.5),m_intake))
-      //   .whileFalse(new RunCommand(()->m_intake.armstop(),m_intake));
+   new JoystickButton(m_driverController,XboxController.Button.kB.value)  
+    .whileTrue(new RunCommand(()->m_intake.intake_run(0.8)));
 
-      // new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
-      //   .whileTrue(new RunCommand(()->m_shooter.setspeed(1000), m_shooter))
-      //   .whileFalse(new RunCommand(()->m_shooter.setspeed(0), m_shooter));
-      
-      
+  new JoystickButton(m_driverController,XboxController.Button.kA.value)
+    .whileTrue(new RunCommand(()->m_intake.intake_run(0)));
 
-    // new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
-    //   .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.2),m_shooter) .andThen(new RunCommand(()->m_indexer.spindexer_run(1),m_indexer)).andThen(new RunCommand(()->m_indexer.indexer_run(.5),m_indexer)))
-    //   .whileFalse(new RunCommand(()->m_indexer.indexer_run(0),m_indexer).andThen(new RunCommand(()->m_shooter.shooter_run(0), m_shooter)).andThen(new RunCommand(()->m_indexer.spindexer_run(0),m_indexer)));
+  new JoystickButton(m_driverController,XboxController.Button.kLeftBumper.value)
+    .whileTrue(new RunCommand(()->m_intake.armmove(0.2),m_intake))
+    .whileFalse(new RunCommand(()->m_intake.armmove(0), m_intake));
+        
+  new JoystickButton(m_driverController,XboxController.Button.kRightBumper.value)
+   .whileTrue(new RunCommand(()->m_intake.armmove(-0.2),m_intake))
+    .whileFalse(new RunCommand(()->m_intake.armmove(0), m_intake));
+
+  new POVButton(m_driverController, 0)
+    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.8),m_shooter));
+
+   new POVButton(m_driverController, 270)
+    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.4),m_shooter));
+  
+   new POVButton(m_driverController, 90)
+    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.6),m_shooter));
+  
+   new POVButton(m_driverController, 180)
+    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0),m_shooter));
+    
+
 
   
-        
+
+
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
@@ -265,24 +271,24 @@ public class RobotContainer
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand()
-  {
-    // Pass in the selected auto from the SmartDashboard as our desired autnomous commmand 
+  public Command getAutonomousCommand() {
+    // Pass in the selected auto from the SmartDashboard as our desired autnomous
+    // commmand
     return autoChooser.getSelected();
   }
 
-  public void setMotorBrake(boolean brake)
-  {
+  public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
   }
-     public void configureButtonBindings() {
-      // new JoystickButton(m_driverController,XboxController.Button.kA.value)
-      //   .whileTrue(new RunCommand(()->m_indexer.spindexer_run(),m_indexer))
-      //   .whileFalse(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer));
 
-      // new JoystickButton(m_driverController, XboxController.Button.kB.value)
-      //   .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter))
-      //   .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
-    
-    }
+  public void configureButtonBindings() {
+    // new JoystickButton(m_driverController,XboxController.Button.kA.value)
+    // .whileTrue(new RunCommand(()->m_indexer.spindexer_run(),m_indexer))
+    // .whileFalse(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer));
+
+    // new JoystickButton(m_driverController, XboxController.Button.kB.value)
+    // .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter))
+    // .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
+
+  }
 }

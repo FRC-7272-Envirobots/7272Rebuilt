@@ -12,7 +12,7 @@ import frc.robot.Constants.RobotConstants;
 public class Indexing_Subsystem extends SubsystemBase{
 
     SparkMax m_Spindexer = new SparkMax(RobotConstants.spindexerCan, MotorType.kBrushless);
-    // SparkMax m_indexer = new SparkMax(RobotConstants.IndexerCan, MotorType.kBrushless);
+   
     TalonFX m_indexer = new TalonFX(RobotConstants.IndexerCan);
 
     public int spswitch =1;
@@ -30,14 +30,15 @@ public class Indexing_Subsystem extends SubsystemBase{
     //         }
     //     return null;
     // }
-    //DEL
-    // public Command spindexer_stop(){
-    //     m_Spindexer.set(0);
-    //     return null;
-   // }
+    
 
     public Command indexer_run(double speed){
         m_indexer.set(speed *idswitch);
+        return null;
+    }
+      public Command shoot(double spispeed,double indspeed){
+        m_Spindexer.set(spispeed);
+        m_indexer.set(indspeed);
         return null;
     }
     // public Command idturn(){
@@ -49,11 +50,7 @@ public class Indexing_Subsystem extends SubsystemBase{
     //     }
     //     return null;
     // }
-    //DEL
-    // public Command indexer_stop(){
-    //     m_indexer.set(0);
-    //     return null;
-    // }
+  
     
     
 }
