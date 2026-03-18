@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -52,28 +53,27 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
-public class SwerveSubsystem extends SubsystemBase
-
-Limelight = new limelight("limelight_Shooter");
+// Limelight = new Limelight("Limelight_Shooter");
 
 // Get target data
-limelight.getLatestResults().ifPresent((LimelightResults result) -> {
-    for (NeuralClassifier object : result.targets_Classifier)
-    {
-        // Classifier says its a algae.
-        if (object.className.equals("algae"))
-        {
-            // Check pixel location of algae.
-            if (object.ty > 2 && object.ty < 1)
-            {
-              // Algae is valid! do stuff!
-            }
-        }
-    }
-});
-  
+// Limelight.getLatestResults().ifPresent((LimelightResults result) -> {
+//     for (NeuralClassifier object : result.targets_Classifier)
+//     {
+//         // Classifier says its a algae.
+//         if (object.className.equals("algae"))
+//         {
+//             // Check pixel location of algae.
+//             if (object.ty > 2 && object.ty < 1)
+//             {
+//               // Algae is valid! do stuff!
+//             }
+//         }
+//     }
+// });
 
   
+public class SwerveSubsystem extends SubsystemBase{
+
   /**
    * Swerve drive object.
    */
@@ -154,10 +154,10 @@ limelight.getLatestResults().ifPresent((LimelightResults result) -> {
     // Fetches robot's current config from PathPlanner (GUI)
     if( config != null) {
       AutoBuilder.configure(
-        this::getpose,
+        this::getPose,
         this::resetOdometry,
         this::getRobotVelocity,
-        (speeds, feedFowrards) -> setChassis(speeds),
+        (speeds, feedFowrards) -> setChassisSpeeds(speeds),
         new PPHolonomicDriveController(
           new PIDConstants(
             Constants.AutonConstants.TRANSLATION_P,
@@ -198,7 +198,7 @@ limelight.getLatestResults().ifPresent((LimelightResults result) -> {
     //MegaTag 2 uses the gyro to produce much more accurate multi-tag pose estimates.
     LimelightHelpers.SetRobotOrientation(
       Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
-      swerveDrive.getOdometryHeading().getDegrees,
+      swerveDrive.getOdometryHeading().getDegrees(),
       0,0,0,0,0
     );
 
