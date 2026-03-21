@@ -36,7 +36,7 @@ public class Indexing_Subsystem extends SubsystemBase{
         m_indexer.set(speed *idswitch);
         return null;
     }
-      public Command shoot(double spispeed,double indspeed){
+      public Command feed(double spispeed,double indspeed){
         m_Spindexer.set(spispeed);
         m_indexer.set(indspeed);
         return null;

@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LightstripEnvirobots;
+import frc.robot.commands.Routine;
 import frc.robot.subsystems.Indexing_Subsystem;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Lightstrip;
@@ -35,6 +36,8 @@ import frc.robot.subsystems.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 import java.io.File;
+
+import com.pathplanner.lib.auto.NamedCommands;
 
 import swervelib.SwerveInputStream;
 
@@ -51,6 +54,7 @@ public class RobotContainer {
   private final Shooter_Subsystem m_shooter = new Shooter_Subsystem();
   private final Intake_Subsystem m_intake = new Intake_Subsystem();
   private final Lightstrip m_Lightstrip0 = new Lightstrip(0);
+  private final Routine m_Routine = new Routine();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
   public static XboxController m_driverController = new XboxController(0);
@@ -58,6 +62,10 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve/neo"));
+
+
+
+  
 
   // Establish a Sendable Chooser that will be able to be sent to the
   // SmartDashboard, allowing selection of desired auto
@@ -126,6 +134,12 @@ public class RobotContainer {
   // private final SendableChooser<Command> autoChooser;
   public RobotContainer() {
 
+    //path planner commands 
+    NamedCommands.registerCommand("lower_intake",m_Routine.ArmDown());
+     NamedCommands.registerCommand("shoot",m_Routine.ShootCommand(0.8));
+    
+    
+
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
     // m_Lightstrip1.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip1));
     // Configure the button bindings
@@ -171,10 +185,10 @@ public class RobotContainer {
   //   .whileTrue(new RunCommand(()->m_intake.intake_run(0),m_intake));
 
   new JoystickButton(m_driverController, XboxController.Button.kY.value)
-    .whileTrue(new RunCommand(()->m_indexer.shoot(1,0.5),m_indexer));
+    .whileTrue(new RunCommand(()->m_indexer.feed(-1,0.8),m_indexer));
 
   new JoystickButton(m_driverController,XboxController.Button.kX.value)
-    .whileTrue(new RunCommand(()->m_indexer.shoot(0, 0),m_indexer));
+    .whileTrue(new RunCommand(()->m_indexer.feed(0, 0),m_indexer));
 
    new JoystickButton(m_driverController,XboxController.Button.kB.value)  
     .whileTrue(new RunCommand(()->m_intake.intake_run(0.8)));
@@ -194,7 +208,7 @@ public class RobotContainer {
     .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.8),m_shooter));
 
    new POVButton(m_driverController, 270)
-    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.4),m_shooter));
+    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.2),m_shooter));
   
    new POVButton(m_driverController, 90)
     .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.6),m_shooter));
