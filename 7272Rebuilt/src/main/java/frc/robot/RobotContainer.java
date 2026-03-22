@@ -135,13 +135,13 @@ public class RobotContainer {
   public RobotContainer() {
 
     //path planner commands 
-    NamedCommands.registerCommand("lower_intake",m_Routine.ArmDown());
-     NamedCommands.registerCommand("shoot",m_Routine.ShootCommand(0.8));
+    // NamedCommands.registerCommand("lower_intake",m_Routine.ArmDown());
+    //  NamedCommands.registerCommand("shoot",m_Routine.ShootCommand(0.8));
     
     
 
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
-    // m_Lightstrip1.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip1));
+  
     // Configure the button bindings
     configureButtonBindings();
 
@@ -197,6 +197,7 @@ public class RobotContainer {
     .whileTrue(new RunCommand(()->m_intake.intake_run(0)));
 
   new JoystickButton(m_driverController,XboxController.Button.kLeftBumper.value)
+      // .whileTrue(new RunCommand(()->m_routines.ArmDown(),m_routines));
     .whileTrue(new RunCommand(()->m_intake.armmove(0.2),m_intake))
     .whileFalse(new RunCommand(()->m_intake.armmove(0), m_intake));
         

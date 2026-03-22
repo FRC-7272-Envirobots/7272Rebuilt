@@ -42,30 +42,30 @@ public class Routine {
     //                                             }),
     //                             new WaitCommand(5)));
     public Command ArmDown(){
-        return Commands.sequence(intake.armmove(-0.2)
-                .alongWith(lightstrip.setColorCommand(Color.YELLOW)),
-                Commands.waitSeconds(0.2)
-                .andThen(intake.armmove(0))
-        );
+        return intake.armmove(-0.2)
+                .alongWith(lightstrip.setColorCommand(Color.YELLOW))
+                .andThen(Commands.waitSeconds(0.2))
+                .andThen(intake.armmove(0));
+        
     }
-    public Command ArmUp(){
-        return Commands.sequence(intake.armmove(0.2)
-                .alongWith(lightstrip.setColorCommand(Color.YELLOW)),
-                Commands.waitSeconds(0.2)
-                .andThen(intake.armmove(0))
-        );
-    }
-    public Command ShootCommand(double shooterspeed){
-        return Commands.sequence(
-            shooter.shooter_run(shooterspeed)
-            .alongWith(lightstrip.flashColor(Color.ORANGE,0.2,0.3)),
-            Commands.waitSeconds(0.3)
-            .alongWith(lightstrip.flashColor(Color.RED,0.2,20)),
-            indexer.feed(0.8,0.5)
+    // public Command ArmUp(){
+    //     return Commands.sequence(intake.armmove(0.2)
+    //             .alongWith(lightstrip.setColorCommand(Color.YELLOW)),
+    //             Commands.waitSeconds(0.2)
+    //             .andThen(intake.armmove(0))
+    //     );
+    // }
+    // public Command ShootCommand(double shooterspeed){
+    //     return Commands.sequence(
+    //         shooter.shooter_run(shooterspeed)
+    //         .alongWith(lightstrip.flashColor(Color.ORANGE,0.2,0.3)),
+    //         Commands.waitSeconds(0.3)
+    //         .alongWith(lightstrip.flashColor(Color.RED,0.2,20)),
+    //         indexer.feed(0.8,0.5)
 
 
-        );
+    //     );
 
-    }
+    // }
     
 }
