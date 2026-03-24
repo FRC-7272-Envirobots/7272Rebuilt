@@ -37,6 +37,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 
 import java.io.File;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import swervelib.SwerveInputStream;
@@ -55,6 +56,7 @@ public class RobotContainer {
   private final Intake_Subsystem m_intake = new Intake_Subsystem();
   private final Lightstrip m_Lightstrip0 = new Lightstrip(0);
   private final Routine m_Routine = new Routine();
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
   public static XboxController m_driverController = new XboxController(0);
@@ -66,10 +68,10 @@ public class RobotContainer {
 
 
   
-
+  
   // Establish a Sendable Chooser that will be able to be sent to the
   // SmartDashboard, allowing selection of desired auto
-  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+   private final SendableChooser<Command> autoChooser;
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled
@@ -139,6 +141,8 @@ public class RobotContainer {
     //  NamedCommands.registerCommand("shoot",m_Routine.ShootCommand(0.8));
     
     
+     autoChooser = AutoBuilder.buildAutoChooser();
+             SmartDashboard.putData("Auto Chooser", autoChooser);
 
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
   
@@ -153,19 +157,19 @@ public class RobotContainer {
     DriverStation.silenceJoystickConnectionWarning(true);
 
     // Set the default auto (do nothing)
-    autoChooser.setDefaultOption("Do Nothing", Commands.runOnce(drivebase::zeroGyroWithAlliance)
-        .andThen(Commands.none()));
+    // autoChooser.setDefaultOption("Do Nothing", Commands.runOnce(drivebase::zeroGyroWithAlliance)
+    //     .andThen(Commands.none()));
 
-    // Add a simple auto option to have the robot drive forward for 1 second then
-    // stop
-    autoChooser.addOption("Drive Forward", Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2)
-        .andThen(drivebase.driveForward().withTimeout(1)));
-    // Put the autoChooser on the SmartDashboard
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    // // Add a simple auto option to have the robot drive forward for 1 second then
+    // // stop
+    // autoChooser.addOption("Drive Forward", Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2)
+    //     .andThen(drivebase.driveForward().withTimeout(1)));
+    // // Put the autoChooser on the SmartDashboard
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    if (autoChooser.getSelected() == null) {
-      RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
-    }
+    // if (autoChooser.getSelected() == null) {
+    //   RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
+    // }
   }
 
   /**
@@ -206,16 +210,18 @@ public class RobotContainer {
     .whileFalse(new RunCommand(()->m_intake.armmove(0), m_intake));
 
   new POVButton(m_driverController, 0)
-    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.8),m_shooter));
+    .whileTrue(new RunCommand(()->m_shooter.setspeed(8),m_shooter));
 
    new POVButton(m_driverController, 270)
-    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.2),m_shooter));
+    .whileTrue(new RunCommand(()->m_shooter.setspeed(2),m_shooter));
   
    new POVButton(m_driverController, 90)
-    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0.6),m_shooter));
+    .whileTrue(new RunCommand(()->m_shooter.setspeed(6),m_shooter));
   
    new POVButton(m_driverController, 180)
-    .whileTrue(new RunCommand(()->m_shooter.shooter_run(0),m_shooter));
+    .whileTrue(new RunCommand(()->m_shooter.setspeed(0),m_shooter));
+    
+  
     
 
 
@@ -266,13 +272,13 @@ public class RobotContainer {
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
 
       driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+     // driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
       driverXbox.leftBumper().onTrue(Commands.none());
       driverXbox.rightBumper().onTrue(Commands.none());
     } else
     {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.start().whileTrue(Commands.none());
       driverXbox.back().whileTrue(Commands.none());
      // driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
@@ -286,11 +292,12 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // Pass in the selected auto from the SmartDashboard as our desired autnomous
-    // commmand
-    return autoChooser.getSelected();
-  }
+   public Command getAutonomousCommand() {
+  //   // Pass in the selected auto from the SmartDashboard as our desired autnomous
+  //   // commmand
+  //   return autoChooser.getSelected();
+  return null;
+   }
 
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
@@ -306,4 +313,5 @@ public class RobotContainer {
     // .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
 
   }
+  
 }

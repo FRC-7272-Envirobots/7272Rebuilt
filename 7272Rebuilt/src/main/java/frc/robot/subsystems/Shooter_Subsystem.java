@@ -5,19 +5,20 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.RobotConstants;
+import frc.robot.Constants.LauncherConstants;
 
 public class Shooter_Subsystem extends SubsystemBase {
     
- TalonFX m_LeftShooter = new TalonFX(RobotConstants.ShooterLcan);
- TalonFX m_RightShooter = new TalonFX(RobotConstants.ShooterRcan);
+ TalonFX m_LeftShooter = new TalonFX(frc.robot.Constants.RobotConstants.ShooterLcan);
+ TalonFX m_RightShooter = new TalonFX(frc.robot.Constants.RobotConstants.ShooterRcan);
  Follower  right_Follower;
  TalonFXConfiguration config;
- double rpm =0;
+ public double shootervel =0;
 
     public Shooter_Subsystem(){
 
@@ -29,7 +30,7 @@ public class Shooter_Subsystem extends SubsystemBase {
 
 
        config = new TalonFXConfiguration();
-        config.Slot0.kP = 0.1;
+        config.Slot0.kP = 0.3;
         // "Nobody uses I" apparently, so dont set it.
         config.Slot0.kD = 0.0087045;
         config.Slot0.kS = 0.034662;
@@ -63,7 +64,7 @@ public class Shooter_Subsystem extends SubsystemBase {
 
    
     public final void  setspeed(double velocityVoltage){
-         MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(velocityVoltage);
+         MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(velocityVoltage*-1);
         m_LeftShooter.setControl(m_request);
         m_RightShooter.setControl(m_request);
         
@@ -82,10 +83,19 @@ public class Shooter_Subsystem extends SubsystemBase {
   //   }
   //   return null;
   // }
+   
 
      
-   public void periodic(){
-      rpm = m_LeftShooter.get()*6000;
-      SmartDashboard.putNumber("shooter speed",rpm);
+  
+   public double getshooterspeed(double distToRobot){
+     // v\left(x\right)=\sqrt{\frac{x^{2}\cdot9.806}{x\sin\left(2\cdot a_{1}\right)-2\cdot h_{1}\cos\left(a_{1}\right)^{2}}}
+      shootervel = Math.sqrt( 
+        (Math.pow(distToRobot,2)*LauncherConstants.gravity)/
+        (distToRobot*Math.sin(2*LauncherConstants.luchagl)-(2*LauncherConstants.shooterht*(Math.pow(Math.cos(distToRobot),2))))
+         
+         );
+      
+
+      return shootervel;
    }
 }
