@@ -67,7 +67,7 @@ public class RobotContainer {
   
   // Establish a Sendable Chooser that will be able to be sent to the
   // SmartDashboard, allowing selection of desired auto
- //  private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> autoChooser;
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled
@@ -137,8 +137,8 @@ public class RobotContainer {
     //  NamedCommands.registerCommand("shoot",m_Routine.ShootCommand(0.8));
     
     
-    //  autoChooser = AutoBuilder.buildAutoChooser();
-    //         SmartDashboard.putData("Auto Chooser", autoChooser);
+     autoChooser = AutoBuilder.buildAutoChooser();
+            SmartDashboard.putData("Auto Chooser", autoChooser);
 
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
   
