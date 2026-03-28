@@ -142,7 +142,7 @@ public class SwerveSubsystem extends SubsystemBase
               1),
           Constants.DriveConstants.moduleTranslations);
 
-          AutoBuilder.configure(
+   AutoBuilder.configure(
           this::getPose, // Robot pose supplier
           this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
           this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
@@ -176,7 +176,6 @@ public class SwerveSubsystem extends SubsystemBase
 
       // Handle exception as needed
       e.printStackTrace();
-
     }
 
 

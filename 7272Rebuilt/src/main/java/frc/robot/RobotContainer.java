@@ -12,7 +12,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LightstripEnvirobots;
@@ -38,8 +36,6 @@ import frc.robot.subsystems.SwerveSubsystem;
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-
 import swervelib.SwerveInputStream;
 
 /**
@@ -71,7 +67,7 @@ public class RobotContainer {
   
   // Establish a Sendable Chooser that will be able to be sent to the
   // SmartDashboard, allowing selection of desired auto
-   private final SendableChooser<Command> autoChooser;
+ //  private final SendableChooser<Command> autoChooser;
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled
@@ -141,8 +137,8 @@ public class RobotContainer {
     //  NamedCommands.registerCommand("shoot",m_Routine.ShootCommand(0.8));
     
     
-     autoChooser = AutoBuilder.buildAutoChooser();
-             SmartDashboard.putData("Auto Chooser", autoChooser);
+    //  autoChooser = AutoBuilder.buildAutoChooser();
+    //         SmartDashboard.putData("Auto Chooser", autoChooser);
 
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
   
@@ -165,7 +161,7 @@ public class RobotContainer {
     // autoChooser.addOption("Drive Forward", Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2)
     //     .andThen(drivebase.driveForward().withTimeout(1)));
     // // Put the autoChooser on the SmartDashboard
-    // SmartDashboard.putData("Auto Chooser", autoChooser);
+   //  SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // if (autoChooser.getSelected() == null) {
     //   RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));

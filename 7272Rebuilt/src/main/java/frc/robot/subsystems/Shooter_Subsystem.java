@@ -69,6 +69,11 @@ public class Shooter_Subsystem extends SubsystemBase {
         m_RightShooter.setControl(m_request);
         
     }
+     public final void  distspeed(double shootervel){
+         MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(shootervel-1);
+        m_LeftShooter.setControl(m_request);
+        m_RightShooter.setControl(m_request);
+     }
         private int shswitch = 1; 
  public Command shooter_run(double speed){
         m_LeftShooter.set(-speed *shswitch);
