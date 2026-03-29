@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -36,6 +37,8 @@ import frc.robot.subsystems.SwerveSubsystem;
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+
+import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 
 /**
@@ -217,11 +220,19 @@ public class RobotContainer {
   
    new POVButton(m_driverController, 180)
     .whileTrue(new RunCommand(()->m_shooter.setspeed(0),m_shooter));
+    
   new JoystickButton(m_psoc, 1)
     .whileTrue(new RunCommand(()->m_shooter.set_speed_auto(),m_shooter))
     .whileFalse(new RunCommand(()->m_shooter.setspeed(0),m_shooter));
     
-    
+  //drive to commands 
+    new JoystickButton(m_psoc, 10)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(drivebase.driveTo(AutoDestination.center_field)));
+     new JoystickButton(m_psoc, 11)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(drivebase.driveTo(AutoDestination.red_hub_front)));
+  
   
     
 

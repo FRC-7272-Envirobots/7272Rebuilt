@@ -25,9 +25,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.AutoDestination;
 import frc.robot.Constants;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
@@ -37,6 +40,7 @@ import limelight.networktables.Orientation3d;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -46,6 +50,8 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -186,10 +192,10 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     try {
 
-      LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
+      LimelightHelpers.SetRobotOrientation(Constants.AutoConstants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
           swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers
-          .getBotPoseEstimate_wpiBlue(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
+          .getBotPoseEstimate_wpiBlue(Constants.AutoConstants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
 
       // System.out.printf("Vision pose estimate: %s\n", poseEstimate);
       poseEstimate = filterPoseEstimate(poseEstimate);
@@ -308,6 +314,39 @@ public class SwerveSubsystem extends SubsystemBase {
             this, swerveDrive, 12, true),
         3.0, 5.0, 3.0);
   }
+    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+      new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
+      new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
+      new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90)));
+
+  // public PathConstraints(double maxVelocityMPS, double maxAccelerationMPSSq,
+  // double maxAngularVelocityRadPerSec, double maxAngularAccelerationRadPerSecSq)
+  // {
+  // this(maxVelocityMPS, maxAccelerationMPSSq, maxAngularVelocityRadPerSec,
+  // maxAngularAccelerationRadPerSecSq, 12.0, false);
+  public Command driveTo(AutoDestination autoDriveto) {
+
+    System.out.println("starting driveTo");
+
+    Optional<Alliance> ally = DriverStation.getAlliance();
+
+    if (!ally.isPresent()) {
+      System.out.println("no alliance selected");
+      return Commands.none();
+    }
+
+    Pose2d chosen_auto;
+   
+      chosen_auto = AutoConstants.Auto_Map.get(autoDriveto);
+   
+    System.out.println(chosen_auto);
+
+    Command autoCommand = AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+    last_Auto_Command = autoCommand;
+    return autoCommand;
+  }
+
+  private Command last_Auto_Command = null;
 
   /**
    * Command to characterize the robot angle motors using SysId

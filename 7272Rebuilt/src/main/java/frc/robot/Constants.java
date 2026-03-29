@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.Inches;
 
 import java.util.Map;
 
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -126,6 +128,19 @@ public final class Constants {
   public static class SwerveConstant {
 
   }
+  public static final class AutoConstants {
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+
+    public static final double kPXController = 1;
+    public static final double kPYController = 1;
+    public static final double kPThetaController = 1;
+      public static PathConstraints defaultPathConstraints = new PathConstraints(1.0, 1.0, .5 * Math.PI, 1 * Math.PI);
+
+  
+
 
   public static final class VisionConstants {
     // public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
@@ -151,10 +166,11 @@ public final class Constants {
     public static final boolean kGyroReversed = false;
   }
 
-  public static final Map<AutoDestination, Pose2d> blueAuto_Map = Map.ofEntries(
-  Map.entry(AutoDestination.center_field, new Pose2d(6.059, 4.305, Rotation2d.fromDegrees(-84.685)))
+  public static final Map<AutoDestination, Pose2d> Auto_Map = Map.ofEntries(
+  Map.entry(AutoDestination.center_field, new Pose2d(6.059, 4.305, Rotation2d.fromDegrees(-84.685))),
+   Map.entry(AutoDestination.red_hub_front, new Pose2d(4.059, 4.305, Rotation2d.fromDegrees(-84.685)))
 
-  );
+  );}
 
   public static final class FieldConstants {
     public static final Pose2d REDHUB_POSE2D = new Pose2d(new Translation2d(11.914, 4.04), new Rotation2d());
