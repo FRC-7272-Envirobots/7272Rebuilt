@@ -47,8 +47,11 @@ import swervelib.SwerveInputStream;
  * trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+      "swerve/neo"));
   private final Indexing_Subsystem m_indexer = new Indexing_Subsystem();
-  private final Shooter_Subsystem m_shooter = new Shooter_Subsystem();
+  private final Shooter_Subsystem m_shooter = new Shooter_Subsystem(() -> drivebase.getPose());
   private final Intake_Subsystem m_intake = new Intake_Subsystem();
   private final Lightstrip m_Lightstrip0 = new Lightstrip(0);
   private final Routine m_Routine = new Routine();
@@ -58,8 +61,6 @@ public class RobotContainer {
   public static XboxController m_driverController = new XboxController(0);
   Joystick m_psoc = new Joystick(1);
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-      "swerve/neo"));
 
 
 
@@ -216,6 +217,10 @@ public class RobotContainer {
   
    new POVButton(m_driverController, 180)
     .whileTrue(new RunCommand(()->m_shooter.setspeed(0),m_shooter));
+  new JoystickButton(m_psoc, 1)
+    .whileTrue(new RunCommand(()->m_shooter.set_speed_auto(),m_shooter))
+    .whileFalse(new RunCommand(()->m_shooter.setspeed(0),m_shooter));
+    
     
   
     

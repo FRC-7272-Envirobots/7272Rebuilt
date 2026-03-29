@@ -195,7 +195,7 @@ public class SwerveSubsystem extends SubsystemBase {
       poseEstimate = filterPoseEstimate(poseEstimate);
       if (poseEstimate != null) {
         swerveDrive.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
-        System.out.println(poseEstimate.pose);
+        //System.out.println(poseEstimate.pose);
       }
     } catch (Exception e) {
       // TODO: handle exception
@@ -285,6 +285,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // return pose2;
     // }
   }
+  
 
   // public double getGyroYawRate() {
   // return m_gyro.getRate() * (frc.robot.Constants.VisionConstants.kGyroReversed

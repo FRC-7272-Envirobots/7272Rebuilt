@@ -1,15 +1,23 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Velocity;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LauncherConstants;
 
 public class Shooter_Subsystem extends SubsystemBase {
@@ -18,15 +26,16 @@ public class Shooter_Subsystem extends SubsystemBase {
  TalonFX m_RightShooter = new TalonFX(frc.robot.Constants.RobotConstants.ShooterRcan);
  Follower  right_Follower;
  TalonFXConfiguration config;
- public double shootervel =0;
+ private final Supplier<Pose2d> positionSupplier;
 
-    public Shooter_Subsystem(){
+    public Shooter_Subsystem(Supplier <Pose2d> positionSupplier){
+      this.positionSupplier = positionSupplier;
+
 
      //m_RightShooter.setControl(new Follower(m_LeftShooter.getDeviceID(), null));
     //  right_Follower = new Follower(RobotConstants.ShooterLcan, null);
     //     m_RightShooter.setControl(right_Follower);
 
-         
 
 
        config = new TalonFXConfiguration();
@@ -92,15 +101,47 @@ public class Shooter_Subsystem extends SubsystemBase {
 
      
   
-   public double getshooterspeed(double distToRobot){
+   public double getshooterspeed(double distance){
      // v\left(x\right)=\sqrt{\frac{x^{2}\cdot9.806}{x\sin\left(2\cdot a_{1}\right)-2\cdot h_{1}\cos\left(a_{1}\right)^{2}}}
-      shootervel = Math.sqrt( 
-        (Math.pow(distToRobot,2)*LauncherConstants.gravity)/
-        (distToRobot*Math.sin(2*LauncherConstants.luchagl)-(2*LauncherConstants.shooterht*(Math.pow(Math.cos(distToRobot),2))))
+      // shootervel = Math.sqrt( 
+      //   (Math.pow(distSupplier,2)*LauncherConstants.gravity)/
+      //   (distSupplier*Math.sin(2*LauncherConstants.luchagl)-(2*LauncherConstants.shooterht*(Math.pow(Math.cos(distSupplier),2))))
          
-         );
+      //    );
+      double numerator = (Math.pow(distance,2)*LauncherConstants.gravity);
+      
+      double  denominator = ((distance*Math.sin(2*Units.degreesToRadians( LauncherConstants.luchagl))
+        -(2*LauncherConstants.shooterht*(Math.pow(Math.cos(Units.degreesToRadians( LauncherConstants.luchagl)),2)))));
+
+      double shootervel = Math.sqrt(numerator / denominator);
+         System.out.printf("numerator: %f, denominator: %f, result: %f\n", numerator, denominator, shootervel);
       
 
       return shootervel;
    }
+   public void set_speed_auto(){
+      
+
+      // get our position
+      Pose2d ourPosition = positionSupplier.get();
+
+      // get our alliance's hub's position
+      Pose2d hubPosition;
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+       hubPosition = FieldConstants.BLUEHUB_POSE2D;
+      } else {
+         hubPosition = FieldConstants.REDHUB_POSE2D;
+      }
+
+      // calcualate distance between current position and our alliance's hub
+      Transform2d transform = new Transform2d(ourPosition, hubPosition);
+      double distance = transform.getTranslation().getNorm();
+      
+      // set speed based on distance
+         double shootervel = getshooterspeed(Math.abs(distance));
+         setspeed(shootervel);
+      System.out.printf("distance : %f shooter speed %f\n",distance,shootervel);
+   }
+
+   
 }
