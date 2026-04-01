@@ -11,15 +11,18 @@ import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -31,6 +34,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.AutoDestination;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.AutoConstants.VisionConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
@@ -39,6 +44,7 @@ import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.Orientation3d;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -292,6 +298,24 @@ public class SwerveSubsystem extends SubsystemBase {
     // }
   }
   
+  public Command turn_to_hub(){
+ 
+  
+   Pose2d team_hub;
+   Pose2d ourPosition = this.getPose();
+   Pose2d goalPose2d;
+   if(DriverStation.getAlliance().get() == Alliance.Blue){
+    team_hub = FieldConstants.BLUEHUB_POSE2D;
+   } else{
+    team_hub = FieldConstants.REDHUB_POSE2D;
+   }
+   
+   Transform2d transform = new Transform2d(ourPosition, team_hub);
+    Rotation2d anglerr = transform.getTranslation().getAngle();
+    goalPose2d = new Pose2d(ourPosition.getTranslation(),anglerr);
+    return AutoBuilder.pathfindToPose(goalPose2d,AutoConstants.defaultPathConstraints);
+    
+  }
 
   // public double getGyroYawRate() {
   // return m_gyro.getRate() * (frc.robot.Constants.VisionConstants.kGyroReversed
@@ -347,6 +371,8 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private Command last_Auto_Command = null;
+
+  
 
   /**
    * Command to characterize the robot angle motors using SysId

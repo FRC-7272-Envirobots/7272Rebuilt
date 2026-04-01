@@ -167,9 +167,29 @@ public final class Constants {
   }
 
   public static final Map<AutoDestination, Pose2d> Auto_Map = Map.ofEntries(
-  Map.entry(AutoDestination.center_field, new Pose2d(6.059, 4.305, Rotation2d.fromDegrees(-84.685))),
-   Map.entry(AutoDestination.red_hub_front, new Pose2d(4.059, 4.305, Rotation2d.fromDegrees(-84.685)))
+  Map.entry(AutoDestination.center_field, new Pose2d(8.288, 4.058, Rotation2d.fromDegrees(-90))),
+  
+//blue map 
+    //hub
+   Map.entry(AutoDestination.blue_hub_left, new Pose2d(2.362, 5.967, Rotation2d.fromDegrees(-40.678))),
+   Map.entry(AutoDestination.blue_hub_front, new Pose2d(2.469, 3.937, Rotation2d.fromDegrees(-0))),
+   Map.entry(AutoDestination.blue_hub_right, new Pose2d(2.362, 1.944, Rotation2d.fromDegrees(30.511))),
+   //trench/hump
+   Map.entry(AutoDestination.blue_hump_left, new Pose2d(4.680,5.593, Rotation2d.fromDegrees(0))),
+   Map.entry(AutoDestination.blue_hump_right, new Pose2d(4.680, 2.500, Rotation2d.fromDegrees(0))),
+   Map.entry(AutoDestination.blue_trench_left, new Pose2d(4.603, 7.401, Rotation2d.fromDegrees(0))),
+   Map.entry(AutoDestination.blue_trench_right, new Pose2d(4.603, 0.622, Rotation2d.fromDegrees(0))),
 
+// red map 
+    //hub
+  Map.entry(AutoDestination.red_hub_left, new Pose2d(14.299, 2.180, Rotation2d.fromDegrees(141.302))),
+  Map.entry(AutoDestination.red_hub_front, new Pose2d(14.080, 4.014, Rotation2d.fromDegrees(180))),
+  Map.entry(AutoDestination.red_hub_right, new Pose2d(14.124, 5.565, Rotation2d.fromDegrees(-140.818))),
+   //trench/hump
+   Map.entry(AutoDestination.red_hump_left, new Pose2d(11.975, 2.448, Rotation2d.fromDegrees(0))),
+   Map.entry(AutoDestination.red_hump_right, new Pose2d(11.975, 5.712, Rotation2d.fromDegrees(0))),
+   Map.entry(AutoDestination.red_trench_left, new Pose2d(11.871, 0.661, Rotation2d.fromDegrees(0))),
+   Map.entry(AutoDestination.red_trench_right, new Pose2d(11.975, 7.448, Rotation2d.fromDegrees(0)))
   );}
 
   public static final class FieldConstants {
