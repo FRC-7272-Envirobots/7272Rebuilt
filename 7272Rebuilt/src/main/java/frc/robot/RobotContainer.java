@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -53,6 +55,7 @@ public class RobotContainer {
 
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve/neo"));
+
   private final Indexing_Subsystem m_indexer = new Indexing_Subsystem();
   private final Shooter_Subsystem m_shooter = new Shooter_Subsystem(() -> drivebase.getPose());
   private final Intake_Subsystem m_intake = new Intake_Subsystem();
@@ -66,13 +69,32 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   // Establish a Sendable Chooser that will be able to be sent to the
-  // SmartDashboard, allowing selection of desired auto
+  //SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled
    * by angular velocity.
    */
+//     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
+//         drivebase.getSwerveDrive(),
+//         () -> driverXbox.getLeftY(),
+//         () -> driverXbox.getLeftX())
+//     .withControllerRotationAxis(() -> driverXbox.getRightX())
+//     .deadband(0.1)
+//     .scaleTranslation(0.8)
+//     .allianceRelativeControl(true);
+
+// // Create an aiming version
+// SwerveInputStream driveAiming = driveAngularVelocity.copy()
+//     .aim(new Pose2d(4.6, 4, new Rotation2d()))  // target pose
+//     .aimWhile(() -> driverXbox.leftBumper().getAsBoolean());
+
+// Use it as your default command
+
+
+
+
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
       () -> driverXbox.getLeftY() * -1,
       () -> driverXbox.getLeftX() * -1)
@@ -80,7 +102,7 @@ public class RobotContainer {
       .deadband(OperatorConstants.DEADBAND)
       .scaleTranslation(0.8)
       .allianceRelativeControl(true);
-
+    
   /**
    * Clone's the angular velocity input stream and converts it to a fieldRelative
    * input stream.
@@ -131,6 +153,9 @@ public class RobotContainer {
 
   // private final SendableChooser<Command> autoChooser;
   public RobotContainer() {
+    UsbCamera frontCamera = CameraServer.startAutomaticCapture("intake", 0);
+                frontCamera.setResolution(640, 480);
+                frontCamera.setFPS(30);
 
     // path planner commands
     // NamedCommands.registerCommand("lower_intake",m_Routine.ArmDown());
@@ -140,12 +165,15 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
+   drivebase.setDefaultCommand(    drivebase.driveFieldOriented(driveAngularVelocity)
+);
+
 
     // Configure the button bindings
     configureButtonBindings();
 
-    // autoChooser = AutoBuilder.buildAutoChooser();
-    // SmartDashboard.putData("Auto Chooser", autoChooser);
+   // autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -162,7 +190,7 @@ public class RobotContainer {
     // Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2)
     // .andThen(drivebase.driveForward().withTimeout(1)));
     // // Put the autoChooser on the SmartDashboard
-    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // if (autoChooser.getSelected() == null) {
     // RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
@@ -191,7 +219,7 @@ public class RobotContainer {
     // .whileTrue(new RunCommand(()->m_intake.intake_run(0),m_intake));
 
     new JoystickButton(m_driverController, XboxController.Button.kY.value)
-        .whileTrue(new RunCommand(() -> m_indexer.feed(-1, 0.8), m_indexer));
+        .whileTrue(new RunCommand(() -> m_indexer.feed(-1, 1), m_indexer));
 
     new JoystickButton(m_driverController, XboxController.Button.kX.value)
         .whileTrue(new RunCommand(() -> m_indexer.feed(0, 0), m_indexer));
@@ -212,10 +240,10 @@ public class RobotContainer {
         .whileFalse(new RunCommand(() -> m_intake.armmove(0), m_intake));
 
     new POVButton(m_driverController, 0)
-        .whileTrue(new RunCommand(() -> m_shooter.setspeed(8), m_shooter));
+        .whileTrue(new RunCommand(() -> m_shooter.setspeed(10000), m_shooter));
 
     new POVButton(m_driverController, 270)
-        .whileTrue(new RunCommand(() -> m_shooter.setspeed(2), m_shooter));
+        .whileTrue(new RunCommand(() -> m_shooter.set_speed_auto(), m_shooter));
 
     new POVButton(m_driverController, 90)
         .whileTrue(new RunCommand(() -> m_shooter.setspeed(6), m_shooter));
@@ -226,7 +254,10 @@ public class RobotContainer {
     new JoystickButton(m_psoc, 1)
         .whileTrue(new RunCommand(() -> m_shooter.set_speed_auto(), m_shooter))
         .whileFalse(new RunCommand(() -> m_shooter.setspeed(0), m_shooter));
-
+     new JoystickButton(m_psoc, 1)
+        .whileTrue(new RunCommand(() ->m_indexer.feedw(-1,0.8),m_indexer))
+        .whileFalse(new RunCommand(() ->m_indexer.feed(0, 0),m_indexer));
+    
     // drive to commands
     new JoystickButton(m_psoc, 10)
         .onTrue(new PrintCommand("")
@@ -235,9 +266,17 @@ public class RobotContainer {
         .onTrue(new PrintCommand("")
             .andThen(drivebase.driveTo(AutoDestination.red_hub_front)));
 
+     new JoystickButton(m_psoc, 13)
+        .onTrue(new PrintCommand("")
+            .andThen(drivebase.driveTo(AutoDestination.blue_hub_front)));
+     new JoystickButton(m_psoc, 12)
+        .onTrue(new PrintCommand("")
+            .andThen(drivebase.driveTo(AutoDestination.blue_hub_right)));
+
   new JoystickButton(m_psoc, 8)
-        .whileTrue(new RunCommand(()->drivebase.turn_to_hub(),drivebase));
-  
+          .onTrue(new PrintCommand("")
+            .andThen(drivebase.turn_to_hub()));
+
 
 
     Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);

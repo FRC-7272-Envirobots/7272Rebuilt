@@ -114,7 +114,7 @@ public class Shooter_Subsystem extends SubsystemBase {
         -(2*LauncherConstants.shooterht*(Math.pow(Math.cos(Units.degreesToRadians( LauncherConstants.luchagl)),2)))));
 
       double shootervel = Math.sqrt(numerator / denominator);
-         System.out.printf("numerator: %f, denominator: %f, result: %f\n", numerator, denominator, shootervel);
+       //  System.out.printf("numerator: %f, denominator: %f, result: %f\n", numerator, denominator, shootervel);
       
 
       return shootervel;
@@ -141,6 +141,7 @@ public class Shooter_Subsystem extends SubsystemBase {
          double shootervel = getshooterspeed(Math.abs(distance));
          setspeed(shootervel);
       System.out.printf("distance : %f shooter speed %f\n",distance,shootervel);
+      
    }
 
    

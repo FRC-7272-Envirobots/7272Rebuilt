@@ -4,25 +4,16 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Meter;
-import static edu.wpi.first.units.Units.Meters;
-
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.estimator.PoseEstimator;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -35,16 +26,9 @@ import frc.robot.AutoDestination;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.AutoConstants.VisionConstants;
 import frc.robot.LimelightHelpers;
-import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
-import limelight.Limelight;
-import limelight.networktables.AngularVelocity3d;
-import limelight.networktables.Orientation3d;
-
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -58,26 +42,22 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
-import com.pathplanner.lib.util.PathPlannerLogging;
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
-
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.math.SwerveMath;
-import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
-import limelight.Limelight;
 
 public class SwerveSubsystem extends SubsystemBase {
 
   /**
    * Swerve drive object.
    */
+  private final Field2d drivefield = new Field2d();
+   
   private final SwerveDrive swerveDrive;
 
   /**
@@ -181,6 +161,7 @@ public class SwerveSubsystem extends SubsystemBase {
   // FROM 2025: Create a Field, send to smartdashboard
   // private final Field2d drivefield = new Field2d();
   // SmartDashboard.putData("Field_Rebuilt", drivefield);
+  // Shuffleboard.putData("Field_Rebuilt", drivefield);
   // PathPlannerLogging.setLogActivePathCallback((poses) -> {
   // drivefield.getObject("path").setPoses(poses);
   // });
@@ -196,6 +177,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putData("Field_Rebuilt", drivefield);
+
     try {
 
       LimelightHelpers.SetRobotOrientation(Constants.AutoConstants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
@@ -300,21 +283,36 @@ public class SwerveSubsystem extends SubsystemBase {
   
   public Command turn_to_hub(){
  
-  
+    System.out.println("tunring to hub ");
    Pose2d team_hub;
    Pose2d ourPosition = this.getPose();
    Pose2d goalPose2d;
    if(DriverStation.getAlliance().get() == Alliance.Blue){
     team_hub = FieldConstants.BLUEHUB_POSE2D;
+    System.out.println("turning to blue hub");
    } else{
     team_hub = FieldConstants.REDHUB_POSE2D;
+    System.out.println("turning to red hub");
    }
    
    Transform2d transform = new Transform2d(ourPosition, team_hub);
-    Rotation2d anglerr = transform.getTranslation().getAngle();
-    goalPose2d = new Pose2d(ourPosition.getTranslation(),anglerr);
-    return AutoBuilder.pathfindToPose(goalPose2d,AutoConstants.defaultPathConstraints);
+    double xoffset = transform.getTranslation().getX();
+    double x = getPose().getX();
+    double y = getPose().getY();
+    double distance = transform.getTranslation().getNorm();
+    Rotation2d angle = transform.getTranslation().getAngle();
+    // Rotation2d angleerr = ;
+   // Rotation2d angle = new Rotation2d(Math.PI);
+    goalPose2d = new Pose2d(x,y,(angle));
+   System.out.println(goalPose2d);
+   Command turnCommand= pathdrive(goalPose2d);
     
+    //System.out.println(autoCommand);
+    return turnCommand;
+  }
+  public Command pathdrive(Pose2d dirvepoPose2d){
+    Command drivecommand = AutoBuilder.pathfindToPose(dirvepoPose2d, AutoConstants.defaultPathConstraints) ;
+    return drivecommand;
   }
 
   // public double getGyroYawRate() {
@@ -365,7 +363,7 @@ public class SwerveSubsystem extends SubsystemBase {
    
     System.out.println(chosen_auto);
 
-    Command autoCommand = AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+    Command autoCommand = pathdrive(chosen_auto);
     last_Auto_Command = autoCommand;
     return autoCommand;
   }

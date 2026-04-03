@@ -283,7 +283,7 @@ The existing `filterPoseEstimate()` and `pickBestPoseEstimate()` helper methods 
 
 For reference, here is the complete constructor after steps 2b and 2c are applied. The new lines are between the `=== NEW ===` markers:
 
-```java
+```javam
   public SwerveSubsystem(File directory)
   {
     SmartDashboard.putData("Field", drivefield);
@@ -437,8 +437,8 @@ Once AutoBuilder is configured, you can use PathPlanner's auto chooser to select
 In the `RobotContainer()` constructor, find these commented-out lines:
 
 ```java
-        //  autoChooser = AutoBuilder.buildAutoChooser();
-        //         SmartDashboard.putData("Auto Chooser", autoChooser);
+         autoChooser = AutoBuilder.buildAutoChooser();
+                SmartDashboard.putData("Auto Chooser", autoChooser);
 ```
 
 To enable this, change the field declaration from:

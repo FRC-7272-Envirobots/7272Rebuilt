@@ -37,7 +37,7 @@ public final class Constants {
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
-  public static final double MAX_SPEED = Units.feetToMeters(14.5);
+  public static final double MAX_SPEED = Units.feetToMeters(14.5)/1;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
   // public static final class AutonConstants
@@ -63,7 +63,7 @@ public final class Constants {
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxSpeedMetersPerSecond = 4.8/10.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
@@ -83,7 +83,7 @@ public final class Constants {
   public static final class LauncherConstants {
     public static final double luchagl = 75;
     public static final double shooterht = 0.5;
-    public static final double gravity = 9.806;
+    public static final double gravity = 10/*9.805 */;
 
   }
 
@@ -137,7 +137,7 @@ public final class Constants {
     public static final double kPXController = 1;
     public static final double kPYController = 1;
     public static final double kPThetaController = 1;
-      public static PathConstraints defaultPathConstraints = new PathConstraints(1.0, 1.0, .5 * Math.PI, 1 * Math.PI);
+      public static PathConstraints defaultPathConstraints = new PathConstraints(1.0, 1.0, 1.5 * Math.PI, 1 * Math.PI);
 
   
 
@@ -193,8 +193,8 @@ public final class Constants {
   );}
 
   public static final class FieldConstants {
-    public static final Pose2d REDHUB_POSE2D = new Pose2d(new Translation2d(11.914, 4.04), new Rotation2d());
-    public static final Pose2d BLUEHUB_POSE2D = new Pose2d(new Translation2d(4.621, 4.04), new Rotation2d());
+    public static final Pose2d REDHUB_POSE2D = new Pose2d(new Translation2d(11.914, 4.04), new Rotation2d(0));
+    public static final Pose2d BLUEHUB_POSE2D = new Pose2d(new Translation2d(4.621, 4.04), new Rotation2d(0));
    
   }
 }

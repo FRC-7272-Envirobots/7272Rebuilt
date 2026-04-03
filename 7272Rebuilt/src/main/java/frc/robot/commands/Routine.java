@@ -7,6 +7,7 @@ import java.awt.Color;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Indexing_Subsystem;
@@ -57,10 +58,10 @@ public class Routine {
     // }
     // public Command ShootCommand(double shooterspeed){
     //     return Commands.sequence(
-    //         shooter.shooter_run(shooterspeed)
-    //         .alongWith(lightstrip.flashColor(Color.ORANGE,0.2,0.3)),
-    //         Commands.waitSeconds(0.3)
-    //         .alongWith(lightstrip.flashColor(Color.RED,0.2,20)),
+    //         new RunCommand(()->shooter, null)
+    //        // .alongWith(lightstrip.flashColor(Color.ORANGE,0.2,0.3)),
+    //         Commands.waitSeconds(0.3),
+    //         // .alongWith(lightstrip.flashColor(Color.RED,0.2,20)),
     //         indexer.feed(0.8,0.5)
 
 
