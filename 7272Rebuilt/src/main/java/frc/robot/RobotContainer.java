@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -40,7 +41,6 @@ import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Lightstrip;
 import frc.robot.subsystems.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 
 /**
@@ -59,13 +59,12 @@ public class RobotContainer {
   private final Indexing_Subsystem m_indexer = new Indexing_Subsystem();
   private final Shooter_Subsystem m_shooter = new Shooter_Subsystem(() -> drivebase.getPose());
   private final Intake_Subsystem m_intake = new Intake_Subsystem();
-  private final Lightstrip m_Lightstrip0 = new Lightstrip(0);
+  private final Lightstrip m_Lightstrip0 = new Lightstrip(1);
   private final Routine m_Routine = new Routine();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
-  public static XboxController m_driverController = new XboxController(0);
-  Joystick m_psoc = new Joystick(1);
+  final CommandJoystick buttonBoard = new CommandJoystick(1);
   // The robot's subsystems and commands are defined here...
 
   // Establish a Sendable Chooser that will be able to be sent to the
@@ -101,11 +100,7 @@ public class RobotContainer {
       .withControllerRotationAxis(driverXbox::getRightX)
       .deadband(OperatorConstants.DEADBAND)
       .scaleTranslation(0.8)
-<<<<<<< HEAD
       .allianceRelativeControl(true);
-    
-=======
-      .allianceRelativeControl(true)
   // .aim(() -> {
   // var alliance = DriverStation.getAlliance();
   // if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
@@ -115,9 +110,7 @@ public class RobotContainer {
   // })
   // .aimWhile(() -> driverXbox.rightBumper().getAsBoolean())
   // .aimLookahead(Milliseconds.of(150))
-  ;
 
->>>>>>> 16d27d9 (Add paths)
   /**
    * Clone's the angular velocity input stream and converts it to a fieldRelative
    * input stream.
@@ -180,12 +173,6 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
-<<<<<<< HEAD
-   drivebase.setDefaultCommand(    drivebase.driveFieldOriented(driveAngularVelocity)
-);
-
-=======
->>>>>>> 16d27d9 (Add paths)
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -193,7 +180,7 @@ public class RobotContainer {
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    // Set the default auto (do nothing)
+    // Set the default auto (do nothing)P
     // autoChooser.setDefaultOption("Do Nothing",
     // Commands.runOnce(drivebase::zeroGyroWithAlliance)
     // .andThen(Commands.none()));
@@ -246,12 +233,19 @@ public class RobotContainer {
     driverXbox.pov(90).onTrue(Commands.runOnce(() -> m_shooter.setspeed(6), m_shooter));
     driverXbox.pov(180).onTrue(Commands.runOnce(() -> m_shooter.setspeed(0), m_shooter));
 
-    new JoystickButton(m_psoc, 1)
-        .whileTrue(new RunCommand(() -> m_shooter.set_speed_auto(), m_shooter))
-        .whileFalse(new RunCommand(() -> m_shooter.setspeed(0), m_shooter));
-     new JoystickButton(m_psoc, 1)
-        .whileTrue(new RunCommand(() ->m_indexer.feedw(-1,0.8),m_indexer))
-        .whileFalse(new RunCommand(() ->m_indexer.feed(0, 0),m_indexer));
+    buttonBoard.button(1).whileTrue(Commands.startEnd(
+      () -> m_shooter.set_speed_auto(),
+      () -> m_shooter.setspeed(0),
+      m_shooter)
+    );
+
+    buttonBoard.button(2).whileTrue(Commands.startEnd(
+      () -> m_indexer.feedw(-1,0.8),
+      () -> m_indexer.feed(0, 0),  
+      m_indexer)
+    );
+
+    buttonBoard.button(5).whileTrue(drivebase.driveToPose(new Pose2d(2,2,new Rotation2d())));
     
 //     // drive to commands
 //     new JoystickButton(m_psoc, 10)
