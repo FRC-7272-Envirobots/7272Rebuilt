@@ -101,8 +101,23 @@ public class RobotContainer {
       .withControllerRotationAxis(driverXbox::getRightX)
       .deadband(OperatorConstants.DEADBAND)
       .scaleTranslation(0.8)
+<<<<<<< HEAD
       .allianceRelativeControl(true);
     
+=======
+      .allianceRelativeControl(true)
+  // .aim(() -> {
+  // var alliance = DriverStation.getAlliance();
+  // if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+  // return Constants.FieldConstants.REDHUB_POSE2D;
+  // }
+  // return Constants.FieldConstants.BLUEHUB_POSE2D;
+  // })
+  // .aimWhile(() -> driverXbox.rightBumper().getAsBoolean())
+  // .aimLookahead(Milliseconds.of(150))
+  ;
+
+>>>>>>> 16d27d9 (Add paths)
   /**
    * Clone's the angular velocity input stream and converts it to a fieldRelative
    * input stream.
@@ -165,9 +180,12 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
+<<<<<<< HEAD
    drivebase.setDefaultCommand(    drivebase.driveFieldOriented(driveAngularVelocity)
 );
 
+=======
+>>>>>>> 16d27d9 (Add paths)
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -313,23 +331,10 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // // Pass in the selected auto from the SmartDashboard as our desired autnomous
     // // commmand
-    // return autoChooser.getSelected();
-    return null;
+    return autoChooser.getSelected();
   }
 
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
   }
-
-  public void configureButtonBindings() {
-    // new JoystickButton(m_driverController,XboxController.Button.kA.value)
-    // .whileTrue(new RunCommand(()->m_indexer.spindexer_run(),m_indexer))
-    // .whileFalse(new RunCommand(()->m_indexer.spindexer_stop(),m_indexer));
-
-    // new JoystickButton(m_driverController, XboxController.Button.kB.value)
-    // .whileTrue(new RunCommand(()->m_shooter.spinup(),m_shooter))
-    // .whileFalse(new RunCommand(()->m_shooter.stopShooter(), m_shooter));
-
-  }
-
 }
