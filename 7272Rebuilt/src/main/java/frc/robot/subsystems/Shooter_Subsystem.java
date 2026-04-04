@@ -12,12 +12,18 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.LauncherConstants;
 
 public class Shooter_Subsystem extends SubsystemBase {
+  private static final String PREFERENCE_KEY_GRAVITY = "Shooter/Gravity";
+  private static final String PREFERENCE_KEY_ANGLE = "Shooter/Angle";
+  private static final String PREFERENCE_KEY_HEIGHT = "Shooter/Height";
+
+  private static final double PREFERENCE_DEFAULT_GRAVITY = 10.0;
+  private static final double PREFERENCE_DEFAULT_ANGLE = 75.0;
+  private static final double PREFERNCE_DEFAULT_HEIGHT = 0.5;
 
   TalonFX m_LeftShooter = new TalonFX(frc.robot.Constants.RobotConstants.ShooterLcan);
   TalonFX m_RightShooter = new TalonFX(frc.robot.Constants.RobotConstants.ShooterRcan);
@@ -27,6 +33,10 @@ public class Shooter_Subsystem extends SubsystemBase {
 
   public Shooter_Subsystem(Supplier<Pose2d> positionSupplier) {
     this.positionSupplier = positionSupplier;
+
+    Preferences.initDouble(PREFERENCE_KEY_GRAVITY, PREFERENCE_DEFAULT_GRAVITY);
+    Preferences.initDouble(PREFERENCE_KEY_ANGLE, PREFERENCE_DEFAULT_ANGLE);
+    Preferences.initDouble(PREFERENCE_KEY_HEIGHT, PREFERNCE_DEFAULT_HEIGHT);
 
     // m_RightShooter.setControl(new Follower(m_LeftShooter.getDeviceID(), null));
     // right_Follower = new Follower(RobotConstants.ShooterLcan, null);
@@ -66,34 +76,12 @@ public class Shooter_Subsystem extends SubsystemBase {
   // m_LeftShooter.setControlPrivate(m_request.); }
 
   public final void setspeed(double velocityVoltage) {
+    System.out.printf("Setting shooter speed %s\n", velocityVoltage);
     MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(velocityVoltage * -1);
     m_LeftShooter.setControl(m_request);
     m_RightShooter.setControl(m_request);
 
   }
-
-  public final void distspeed(double shootervel) {
-    MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(shootervel - 1);
-    m_LeftShooter.setControl(m_request);
-    m_RightShooter.setControl(m_request);
-  }
-
-  private int shswitch = 1;
-
-  public Command shooter_run(double speed) {
-    m_LeftShooter.set(-speed * shswitch);
-    m_RightShooter.set(speed * shswitch);
-    return null;
-  }
-  // public Command shturn(){
-  // if(shswitch == 1){
-  // shswitch =0;
-  // }
-  // else{
-  // shswitch =1;
-  // }
-  // return null;
-  // }
 
   public double getshooterspeed(double distance) {
     // v\left(x\right)=\sqrt{\frac{x^{2}\cdot9.806}{x\sin\left(2\cdot
@@ -103,16 +91,18 @@ public class Shooter_Subsystem extends SubsystemBase {
     // (distSupplier*Math.sin(2*LauncherConstants.luchagl)-(2*LauncherConstants.shooterht*(Math.pow(Math.cos(distSupplier),2))))
 
     // );
-    double numerator = (Math.pow(distance, 2) * LauncherConstants.gravity);
 
-    double denominator = ((distance * Math.sin(2 * Units.degreesToRadians(LauncherConstants.luchagl))
-        - (2 * LauncherConstants.shooterht
-            * (Math.pow(Math.cos(Units.degreesToRadians(LauncherConstants.luchagl)), 2)))));
+    double shooterGravity = Preferences.getDouble(PREFERENCE_KEY_GRAVITY, PREFERENCE_DEFAULT_GRAVITY);
+    double shooterAngle = Preferences.getDouble(PREFERENCE_KEY_ANGLE, PREFERENCE_DEFAULT_ANGLE);
+    double shooterHeight = Preferences.getDouble(PREFERENCE_KEY_HEIGHT, PREFERNCE_DEFAULT_HEIGHT);
+
+    double numerator = (Math.pow(distance, 2) * shooterGravity);
+
+    double denominator = ((distance * Math.sin(2 * Units.degreesToRadians(shooterAngle))
+        - (2 * shooterHeight
+            * (Math.pow(Math.cos(Units.degreesToRadians(shooterAngle)), 2)))));
 
     double shootervel = Math.sqrt(numerator / denominator);
-    // System.out.printf("numerator: %f, denominator: %f, result: %f\n", numerator,
-    // denominator, shootervel);
-
     return shootervel;
   }
 

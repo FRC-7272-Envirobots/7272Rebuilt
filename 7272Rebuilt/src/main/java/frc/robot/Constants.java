@@ -39,11 +39,6 @@ public final class Constants {
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
-  public static final class LauncherConstants {
-    public static final double luchagl = 75.0;
-    public static final double shooterht = 0.5;
-  }
-
   public static class OperatorConstants {
 
     // Joystick Deadband
