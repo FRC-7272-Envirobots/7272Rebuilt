@@ -4,6 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Milliseconds;
+
+import java.io.File;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -25,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LightstripEnvirobots;
@@ -35,11 +40,6 @@ import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Lightstrip;
 import frc.robot.subsystems.Shooter_Subsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-
-import java.io.File;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-
 import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 
@@ -169,10 +169,6 @@ public class RobotContainer {
 );
 
 
-    // Configure the button bindings
-    configureButtonBindings();
-
-   // autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Configure the trigger bindings
@@ -212,44 +208,25 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // new JoystickButton(m_driverController,XboxController.Button.kB.value)
-    // .whileTrue(new RunCommand(()->m_intake.intake_run(0.8),m_intake));
+    driverXbox.y().whileTrue(new RunCommand(() -> m_indexer.feed(-1, 1), m_indexer));
+    driverXbox.x().whileTrue(new RunCommand(() -> m_indexer.feed(0, 0), m_indexer));
+    driverXbox.b().whileTrue(new RunCommand(() -> m_intake.intake_run(0.8)));
+    driverXbox.a().whileTrue(new RunCommand(() -> m_intake.intake_run(0)));
 
-    // new JoystickButton(m_driverController,XboxController.Button.kA.value)
-    // .whileTrue(new RunCommand(()->m_intake.intake_run(0),m_intake));
+    driverXbox.leftBumper().whileTrue(Commands.startEnd(
+        () -> m_intake.armmove(0.2),
+        () -> m_intake.armmove(0),
+        m_intake));
 
-    new JoystickButton(m_driverController, XboxController.Button.kY.value)
-        .whileTrue(new RunCommand(() -> m_indexer.feed(-1, 1), m_indexer));
+    driverXbox.rightBumper().whileTrue(Commands.startEnd(
+        () -> m_intake.armmove(-0.2),
+        () -> m_intake.armmove(0),
+        m_intake));
 
-    new JoystickButton(m_driverController, XboxController.Button.kX.value)
-        .whileTrue(new RunCommand(() -> m_indexer.feed(0, 0), m_indexer));
-
-    new JoystickButton(m_driverController, XboxController.Button.kB.value)
-        .whileTrue(new RunCommand(() -> m_intake.intake_run(0.8)));
-
-    new JoystickButton(m_driverController, XboxController.Button.kA.value)
-        .whileTrue(new RunCommand(() -> m_intake.intake_run(0)));
-
-    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
-        // .whileTrue(new RunCommand(()->m_routines.ArmDown(),m_routines));
-        .whileTrue(new RunCommand(() -> m_intake.armmove(0.2), m_intake))
-        .whileFalse(new RunCommand(() -> m_intake.armmove(0), m_intake));
-
-    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
-        .whileTrue(new RunCommand(() -> m_intake.armmove(-0.2), m_intake))
-        .whileFalse(new RunCommand(() -> m_intake.armmove(0), m_intake));
-
-    new POVButton(m_driverController, 0)
-        .whileTrue(new RunCommand(() -> m_shooter.setspeed(10000), m_shooter));
-
-    new POVButton(m_driverController, 270)
-        .whileTrue(new RunCommand(() -> m_shooter.set_speed_auto(), m_shooter));
-
-    new POVButton(m_driverController, 90)
-        .whileTrue(new RunCommand(() -> m_shooter.setspeed(6), m_shooter));
-
-    new POVButton(m_driverController, 180)
-        .whileTrue(new RunCommand(() -> m_shooter.setspeed(0), m_shooter));
+    driverXbox.pov(0).onTrue(Commands.runOnce(() -> m_shooter.setspeed(10000), m_shooter));
+    driverXbox.pov(270).onTrue(Commands.runOnce(() -> m_shooter.set_speed_auto(), m_shooter));
+    driverXbox.pov(90).onTrue(Commands.runOnce(() -> m_shooter.setspeed(6), m_shooter));
+    driverXbox.pov(180).onTrue(Commands.runOnce(() -> m_shooter.setspeed(0), m_shooter));
 
     new JoystickButton(m_psoc, 1)
         .whileTrue(new RunCommand(() -> m_shooter.set_speed_auto(), m_shooter))
@@ -266,17 +243,16 @@ public class RobotContainer {
 //         .onTrue(new PrintCommand("")
 //             .andThen(drivebase.driveTo(AutoDestination.red_hub_front)));
 
-//      new JoystickButton(m_psoc, 13)
-//         .onTrue(new PrintCommand("")
-//             .andThen(drivebase.driveTo(AutoDestination.blue_hub_front)));
-//      new JoystickButton(m_psoc, 12)
-//         .onTrue(new PrintCommand("")
-//             .andThen(drivebase.driveTo(AutoDestination.blue_hub_right)));
-
-//   new JoystickButton(m_psoc, 8)
-//           .onTrue(new PrintCommand("")
-//             .andThen(drivebase.turn_to_hub()));
-
+//    // drive to commands
+//    new JoystickButton(m_psoc, 10)
+//        .whileTrue(drivebase.driveTo(AutoDestination.center_field));
+//   new JoystickButton(m_psoc, 11)
+//        .whileTrue(drivebase.driveTo(AutoDestination.red_hub_front));
+//
+//    new JoystickButton(m_psoc, 13)
+//        .whileTrue(drivebase.driveTo(AutoDestination.blue_hub_front));
+//    new JoystickButton(m_psoc, 12)
+//        .whileTrue(drivebase.driveTo(AutoDestination.blue_hub_right));
 
     Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
@@ -320,11 +296,11 @@ public class RobotContainer {
       driverXbox.rightBumper().onTrue(Commands.none());
     } else {
       // driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.start().whileTrue(Commands.none());
-      driverXbox.back().whileTrue(Commands.none());
-      // driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock,
-      // drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
+      // driverXbox.start().whileTrue(Commands.none());
+      // driverXbox.back().whileTrue(Commands.none());
+      // // driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock,
+      // // drivebase).repeatedly());
+      // driverXbox.rightBumper().onTrue(Commands.none());
     }
 
   }

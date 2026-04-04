@@ -223,12 +223,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     System.out.println("starting driveTo");
 
-    Optional<Alliance> ally = DriverStation.getAlliance();
+    // Optional<Alliance> ally = DriverStation.getAlliance();
 
-    if (!ally.isPresent()) {
-      System.out.println("no alliance selected");
-      return Commands.none();
-    }
+    // if (!ally.isPresent()) {
+    // System.out.println("no alliance selected");
+    // return Commands.none();
+    // }
 
     Pose2d chosen_auto = AutoConstants.Auto_Map.get(autoDriveto);
 
