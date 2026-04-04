@@ -4,20 +4,13 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-
 import java.util.Map;
-
-import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import swervelib.math.Matter;
 
 /**
@@ -49,7 +42,6 @@ public final class Constants {
   public static final class LauncherConstants {
     public static final double luchagl = 75.0;
     public static final double shooterht = 0.5;
-    public static final double gravity = 10.0/* 9.805 */;
   }
 
   public static class OperatorConstants {
