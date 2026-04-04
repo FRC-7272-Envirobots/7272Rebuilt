@@ -37,7 +37,7 @@ public final class Constants {
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
-  public static final double MAX_SPEED = Units.feetToMeters(14.5)/1;
+  public static final double MAX_SPEED = Units.feetToMeters(14.5) / 1;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
   // public static final class AutonConstants
@@ -63,7 +63,7 @@ public final class Constants {
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8/10.0;
+    public static final double kMaxSpeedMetersPerSecond = 4.8 / 10.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
@@ -83,7 +83,7 @@ public final class Constants {
   public static final class LauncherConstants {
     public static final double luchagl = 75;
     public static final double shooterht = 0.5;
-    public static final double gravity = 10/*9.805 */;
+    public static final double gravity = 10/* 9.805 */;
 
   }
 
@@ -128,6 +128,7 @@ public final class Constants {
   public static class SwerveConstant {
 
   }
+
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
@@ -137,64 +138,61 @@ public final class Constants {
     public static final double kPXController = 1;
     public static final double kPYController = 1;
     public static final double kPThetaController = 1;
-      public static PathConstraints defaultPathConstraints = new PathConstraints(1.0, 1.0, 1.5 * Math.PI, 1 * Math.PI);
+    public static PathConstraints defaultPathConstraints = new PathConstraints(1.0, 1.0, 1.5 * Math.PI, 1 * Math.PI);
 
-  
+    public static final class VisionConstants {
+      // public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
+      // public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Distance.ofBaseUnits(14,
+      // Inches); // front to back from center
+      // public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Distance.ofBaseUnits(3,
+      // Inches); // left to right from center
+      // public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Distance.ofBaseUnits(9,
+      // Inches);
+      // public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Angle.ofBaseUnits(0,
+      // Degrees);
+      // public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Angle.ofBaseUnits(-45,
+      // Degrees);
+      // public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Angle.ofBaseUnits(0,
+      // Degrees);
+      public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
+      public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Inches.of(11.700482); // front to back from center
+      public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Inches.of(-8.009224); // left to right from center
+      public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Inches.of(13.187444);
+      public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Degrees.of(0);
+      public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Degrees.of(15);
+      public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Degrees.of(0);
+      public static final boolean kGyroReversed = false;
+    }
 
+    public static final Map<AutoDestination, Pose2d> Auto_Map = Map.ofEntries(
+        Map.entry(AutoDestination.center_field, new Pose2d(8.288, 4.058, Rotation2d.fromDegrees(-90))),
 
-  public static final class VisionConstants {
-    // public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
-    // public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Distance.ofBaseUnits(14,
-    // Inches); // front to back from center
-    // public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Distance.ofBaseUnits(3,
-    // Inches); // left to right from center
-    // public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Distance.ofBaseUnits(9,
-    // Inches);
-    // public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Angle.ofBaseUnits(0,
-    // Degrees);
-    // public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Angle.ofBaseUnits(-45,
-    // Degrees);
-    // public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Angle.ofBaseUnits(0,
-    // Degrees);
-    public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
-    public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Inches.of(11.700482); // front to back from center
-    public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Inches.of(-8.009224); // left to right from center
-    public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Inches.of(13.187444);
-    public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Degrees.of(0);
-    public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Degrees.of(15);
-    public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Degrees.of(0);
-    public static final boolean kGyroReversed = false;
+        // blue map
+        // hub
+        Map.entry(AutoDestination.blue_hub_left, new Pose2d(2.362, 5.967, Rotation2d.fromDegrees(-40.678))),
+        Map.entry(AutoDestination.blue_hub_front, new Pose2d(2.469, 3.937, Rotation2d.fromDegrees(-0))),
+        Map.entry(AutoDestination.blue_hub_right, new Pose2d(2.362, 1.944, Rotation2d.fromDegrees(30.511))),
+        // trench/hump
+        Map.entry(AutoDestination.blue_hump_left, new Pose2d(4.680, 5.593, Rotation2d.fromDegrees(0))),
+        Map.entry(AutoDestination.blue_hump_right, new Pose2d(4.680, 2.500, Rotation2d.fromDegrees(0))),
+        Map.entry(AutoDestination.blue_trench_left, new Pose2d(4.603, 7.401, Rotation2d.fromDegrees(0))),
+        Map.entry(AutoDestination.blue_trench_right, new Pose2d(4.603, 0.622, Rotation2d.fromDegrees(0))),
+
+        // red map
+        // hub
+        Map.entry(AutoDestination.red_hub_left, new Pose2d(14.299, 2.180, Rotation2d.fromDegrees(141.302))),
+        Map.entry(AutoDestination.red_hub_front, new Pose2d(14.080, 4.014, Rotation2d.fromDegrees(180))),
+        Map.entry(AutoDestination.red_hub_right, new Pose2d(14.124, 5.565, Rotation2d.fromDegrees(-140.818))),
+        // trench/hump
+        Map.entry(AutoDestination.red_hump_left, new Pose2d(11.975, 2.448, Rotation2d.fromDegrees(0))),
+        Map.entry(AutoDestination.red_hump_right, new Pose2d(11.975, 5.712, Rotation2d.fromDegrees(0))),
+        Map.entry(AutoDestination.red_trench_left, new Pose2d(11.871, 0.661, Rotation2d.fromDegrees(0))),
+        Map.entry(AutoDestination.red_trench_right, new Pose2d(11.975, 7.448, Rotation2d.fromDegrees(0))));
   }
-
-  public static final Map<AutoDestination, Pose2d> Auto_Map = Map.ofEntries(
-  Map.entry(AutoDestination.center_field, new Pose2d(8.288, 4.058, Rotation2d.fromDegrees(-90))),
-  
-//blue map 
-    //hub
-   Map.entry(AutoDestination.blue_hub_left, new Pose2d(2.362, 5.967, Rotation2d.fromDegrees(-40.678))),
-   Map.entry(AutoDestination.blue_hub_front, new Pose2d(2.469, 3.937, Rotation2d.fromDegrees(-0))),
-   Map.entry(AutoDestination.blue_hub_right, new Pose2d(2.362, 1.944, Rotation2d.fromDegrees(30.511))),
-   //trench/hump
-   Map.entry(AutoDestination.blue_hump_left, new Pose2d(4.680,5.593, Rotation2d.fromDegrees(0))),
-   Map.entry(AutoDestination.blue_hump_right, new Pose2d(4.680, 2.500, Rotation2d.fromDegrees(0))),
-   Map.entry(AutoDestination.blue_trench_left, new Pose2d(4.603, 7.401, Rotation2d.fromDegrees(0))),
-   Map.entry(AutoDestination.blue_trench_right, new Pose2d(4.603, 0.622, Rotation2d.fromDegrees(0))),
-
-// red map 
-    //hub
-  Map.entry(AutoDestination.red_hub_left, new Pose2d(14.299, 2.180, Rotation2d.fromDegrees(141.302))),
-  Map.entry(AutoDestination.red_hub_front, new Pose2d(14.080, 4.014, Rotation2d.fromDegrees(180))),
-  Map.entry(AutoDestination.red_hub_right, new Pose2d(14.124, 5.565, Rotation2d.fromDegrees(-140.818))),
-   //trench/hump
-   Map.entry(AutoDestination.red_hump_left, new Pose2d(11.975, 2.448, Rotation2d.fromDegrees(0))),
-   Map.entry(AutoDestination.red_hump_right, new Pose2d(11.975, 5.712, Rotation2d.fromDegrees(0))),
-   Map.entry(AutoDestination.red_trench_left, new Pose2d(11.871, 0.661, Rotation2d.fromDegrees(0))),
-   Map.entry(AutoDestination.red_trench_right, new Pose2d(11.975, 7.448, Rotation2d.fromDegrees(0)))
-  );}
 
   public static final class FieldConstants {
     public static final Pose2d REDHUB_POSE2D = new Pose2d(new Translation2d(11.914, 4.04), new Rotation2d(0));
     public static final Pose2d BLUEHUB_POSE2D = new Pose2d(new Translation2d(4.621, 4.04), new Rotation2d(0));
-   
+
   }
 }
