@@ -36,8 +36,9 @@ public final class Constants {
 
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
+  public static final double MOMENT_OF_INERTIA = 6.883;
   public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
-  public static final double MAX_SPEED = Units.feetToMeters(14.5) / 1;
+  public static final double MAX_SPEED = Units.feetToMeters(3); // was 14.5
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
   // public static final class AutonConstants
@@ -49,70 +50,20 @@ public final class Constants {
   // }
 
   public static final class DrivebaseConstants {
-
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
-  public static final class DriveConstants {
-    public static final double MASS_KG = 31;
-    public static final double MOMENT_OF_INERTIA = 6.883;
-
-    public static final double DRIVE_LIMITER = 2;
-    public static final double ELEVATOR_LIMITER = 60;
-
-    // Driving Parameters - Note that these are not the maximum capable speeds of
-    // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8 / 10.0;
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
-
-    // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(27.0 - (2.0 * 1.75));
-    // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(32.0 - (2.0 * 1.75));
-    // Distance between front and back wheels on robot
-
-    public static final Translation2d[] moduleTranslations = {
-        new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0),
-        new Translation2d(kWheelBase / 2.0, -kTrackWidth / 2.0),
-        new Translation2d(-kWheelBase / 2.0, kTrackWidth / 2.0),
-        new Translation2d(-kWheelBase / 2.0, -kTrackWidth / 2.0)
-    };
-  }
-
   public static final class LauncherConstants {
-    public static final double luchagl = 75;
+    public static final double luchagl = 75.0;
     public static final double shooterht = 0.5;
-    public static final double gravity = 10/* 9.805 */;
-
-  }
-
-  public static final class ModuleConstants {
-    // The MAXSwerve module can be configured with one of three pinion gears: 12T,
-    // 13T, or 14T. This changes the drive speed of the module (a pinion gear with
-    // more teeth will result in a robot that drives faster).
-    public static final int kDrivingMotorPinionTeeth = 13;
-
-    // Calculations required for driving motor conversion factors and feed forward
-    public static final double kDrivingMotorFreeSpeedRps = 100;
-    public static final double kWheelDiameterMeters = 0.0762;
-    public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
-    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
-    // teeth on the bevel pinion
-    public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
-    public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
-        / kDrivingMotorReduction;
-
-    public static final double WHEEL_COEFFICIENT_OF_FRICTION = 0.7;
-    public static final double DRIVE_CURRENT_LIMIT = 50;
+    public static final double gravity = 10.0/* 9.805 */;
   }
 
   public static class OperatorConstants {
 
     // Joystick Deadband
     public static final double DEADBAND = 0.1;
-    public static final double LEFT_Y_DEADBAND = 0.1;
-    public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT = 6;
   }
 
@@ -123,10 +74,6 @@ public final class Constants {
     public static final int IntakeCan = 18;
     public static final int ShooterRcan = 19;
     public static final int ShooterLcan = 20;
-  }
-
-  public static class SwerveConstant {
-
   }
 
   public static final class AutoConstants {

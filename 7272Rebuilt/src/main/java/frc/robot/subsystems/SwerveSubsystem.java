@@ -14,8 +14,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.struct.parser.ParseException;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,9 +33,11 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -42,8 +47,13 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -57,7 +67,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /**
    * Swerve drive object.
-   */   
+   */
   private final SwerveDrive swerveDrive;
 
   /**
@@ -175,7 +185,7 @@ public class SwerveSubsystem extends SubsystemBase {
       poseEstimate = filterPoseEstimate(poseEstimate);
       if (poseEstimate != null) {
         swerveDrive.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
-        //System.out.println(poseEstimate.pose);
+        // System.out.println(poseEstimate.pose);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -265,19 +275,48 @@ public class SwerveSubsystem extends SubsystemBase {
     // return pose2;
     // }
   }
-  
-  public Command pathdrive(Pose2d dirvepoPose2d){
-    Command drivecommand = AutoBuilder.pathfindToPose(dirvepoPose2d, AutoConstants.defaultPathConstraints) ;
-    return drivecommand;
-  }
-
-  // public double getGyroYawRate() {
-  // return m_gyro.getRate() * (frc.robot.Constants.VisionConstants.kGyroReversed
-  // ? -1.0 : 1.0);
-  // }
 
   @Override
   public void simulationPeriodic() {
+  }
+
+  public Command driveTo(AutoDestination autoDriveto) {
+
+    System.out.println("starting driveTo");
+
+    Optional<Alliance> ally = DriverStation.getAlliance();
+
+    if (!ally.isPresent()) {
+      System.out.println("no alliance selected");
+      return Commands.none();
+    }
+
+    Pose2d chosen_auto = AutoConstants.Auto_Map.get(autoDriveto);
+
+    System.out.println(chosen_auto);
+
+    return driveToPose(chosen_auto);
+  }
+
+  /**
+   * Use PathPlanner Path finding to go to a point on the field.
+   *
+   * @param pose Target {@link Pose2d} to go to.
+   * @return PathFinding command
+   */
+  public Command driveToPose(Pose2d pose) {
+    System.out.printf("driving to pose %s\n", pose);
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumChassisVelocity(), 4.0,
+        swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
+
+    // Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        pose,
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
+    );
   }
 
   /**
@@ -292,41 +331,6 @@ public class SwerveSubsystem extends SubsystemBase {
             this, swerveDrive, 12, true),
         3.0, 5.0, 3.0);
   }
-    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-      new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
-      new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
-      new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90)));
-
-  // public PathConstraints(double maxVelocityMPS, double maxAccelerationMPSSq,
-  // double maxAngularVelocityRadPerSec, double maxAngularAccelerationRadPerSecSq)
-  // {
-  // this(maxVelocityMPS, maxAccelerationMPSSq, maxAngularVelocityRadPerSec,
-  // maxAngularAccelerationRadPerSecSq, 12.0, false);
-  public Command driveTo(AutoDestination autoDriveto) {
-
-    System.out.println("starting driveTo");
-
-    Optional<Alliance> ally = DriverStation.getAlliance();
-
-    if (!ally.isPresent()) {
-      System.out.println("no alliance selected");
-      return Commands.none();
-    }
-
-    Pose2d chosen_auto;
-   
-      chosen_auto = AutoConstants.Auto_Map.get(autoDriveto);
-   
-    System.out.println(chosen_auto);
-
-    Command autoCommand = pathdrive(chosen_auto);
-    last_Auto_Command = autoCommand;
-    return autoCommand;
-  }
-
-  private Command last_Auto_Command = null;
-
-  
 
   /**
    * Command to characterize the robot angle motors using SysId
