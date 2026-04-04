@@ -236,6 +236,8 @@ public class RobotContainer {
 
     buttonBoard.button(5).whileTrue(drivebase.driveToPose(new Pose2d(2, 2, new Rotation2d())));
 
+    buttonBoard.button(14).whileTrue(drivebase.driveTo(AutoDestination.center_field));
+
     // // drive to commands
     // new JoystickButton(m_psoc, 10)
     // .onTrue(new PrintCommand("")
