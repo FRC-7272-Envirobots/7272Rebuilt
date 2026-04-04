@@ -180,7 +180,7 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     try {
       LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers
-          .getBotPoseEstimate_wpiBlue(Constants.AutoConstants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
+          .getBotPoseEstimate_wpiBlue(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
 
       poseEstimate = filterPoseEstimate(poseEstimate);
       if (poseEstimate != null) {

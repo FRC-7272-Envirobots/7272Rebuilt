@@ -41,14 +41,6 @@ public final class Constants {
   public static final double MAX_SPEED = Units.feetToMeters(3); // was 14.5
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
-  // public static final class AutonConstants
-  // {
-  //
-  // public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0,
-  // 0);
-  // public static final PIDConstants ANGLE_PID = new PIDConstants(0.4, 0, 0.01);
-  // }
-
   public static final class DrivebaseConstants {
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
@@ -76,40 +68,11 @@ public final class Constants {
     public static final int ShooterLcan = 20;
   }
 
+  public static final class VisionConstants {
+    public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
+  }
+
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-
-    public static final double kPXController = 1;
-    public static final double kPYController = 1;
-    public static final double kPThetaController = 1;
-    public static PathConstraints defaultPathConstraints = new PathConstraints(1.0, 1.0, 1.5 * Math.PI, 1 * Math.PI);
-
-    public static final class VisionConstants {
-      // public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
-      // public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Distance.ofBaseUnits(14,
-      // Inches); // front to back from center
-      // public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Distance.ofBaseUnits(3,
-      // Inches); // left to right from center
-      // public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Distance.ofBaseUnits(9,
-      // Inches);
-      // public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Angle.ofBaseUnits(0,
-      // Degrees);
-      // public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Angle.ofBaseUnits(-45,
-      // Degrees);
-      // public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Angle.ofBaseUnits(0,
-      // Degrees);
-      public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
-      public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Inches.of(11.700482); // front to back from center
-      public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Inches.of(-8.009224); // left to right from center
-      public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Inches.of(13.187444);
-      public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Degrees.of(0);
-      public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Degrees.of(15);
-      public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Degrees.of(0);
-      public static final boolean kGyroReversed = false;
-    }
 
     public static final Map<AutoDestination, Pose2d> Auto_Map = Map.ofEntries(
         Map.entry(AutoDestination.center_field, new Pose2d(8.288, 4.058, Rotation2d.fromDegrees(-90))),
