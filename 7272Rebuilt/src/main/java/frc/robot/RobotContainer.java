@@ -258,24 +258,24 @@ public class RobotContainer {
         .whileTrue(new RunCommand(() ->m_indexer.feedw(-1,0.8),m_indexer))
         .whileFalse(new RunCommand(() ->m_indexer.feed(0, 0),m_indexer));
     
-    // drive to commands
-    new JoystickButton(m_psoc, 10)
-        .onTrue(new PrintCommand("")
-            .andThen(drivebase.driveTo(AutoDestination.center_field)));
-    new JoystickButton(m_psoc, 11)
-        .onTrue(new PrintCommand("")
-            .andThen(drivebase.driveTo(AutoDestination.red_hub_front)));
+//     // drive to commands
+//     new JoystickButton(m_psoc, 10)
+//         .onTrue(new PrintCommand("")
+//             .andThen(drivebase.driveTo(AutoDestination.center_field)));
+//     new JoystickButton(m_psoc, 11)
+//         .onTrue(new PrintCommand("")
+//             .andThen(drivebase.driveTo(AutoDestination.red_hub_front)));
 
-     new JoystickButton(m_psoc, 13)
-        .onTrue(new PrintCommand("")
-            .andThen(drivebase.driveTo(AutoDestination.blue_hub_front)));
-     new JoystickButton(m_psoc, 12)
-        .onTrue(new PrintCommand("")
-            .andThen(drivebase.driveTo(AutoDestination.blue_hub_right)));
+//      new JoystickButton(m_psoc, 13)
+//         .onTrue(new PrintCommand("")
+//             .andThen(drivebase.driveTo(AutoDestination.blue_hub_front)));
+//      new JoystickButton(m_psoc, 12)
+//         .onTrue(new PrintCommand("")
+//             .andThen(drivebase.driveTo(AutoDestination.blue_hub_right)));
 
-  new JoystickButton(m_psoc, 8)
-          .onTrue(new PrintCommand("")
-            .andThen(drivebase.turn_to_hub()));
+//   new JoystickButton(m_psoc, 8)
+//           .onTrue(new PrintCommand("")
+//             .andThen(drivebase.turn_to_hub()));
 
 
 
