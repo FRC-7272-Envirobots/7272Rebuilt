@@ -192,48 +192,6 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
-  //
-
-  // TODO: Integrate limelight position computiation into Periodic()
-  // limelight.getSettings()
-  // .withRobotOrientation(new Orientation3d(swerve.getGyro.getRotation3d(),
-  // new AngularVelocity3d(DegreesPerSecond.of(m_gyro.getPitch()),
-  // DegreesPerSecond.of(m_gyro.getRoll()),
-  // DegreesPerSecond.of(m_gyro.getYaw()))))
-  // .save();
-  // limelight.createPoseEstimator(null);
-
-  // // Get MegaTag2 pose
-  // Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();
-  // // If the pose is present
-  // visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-  // // Add it to the pose estimator.
-  // poseEstimator.addVisionMeasurement(poseEstimate.pose.toPose2d(),
-  // poseEstimate.timestampSeconds);
-
-  // if (limelightInterval++ == 30) {
-  // limelightInterval = 0;
-  // LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
-  // getHeading().getDegrees(), 0, 0,
-  // 0, 0, 0);
-  // LimelightHelpers.PoseEstimate outtakePoseEstimate = LimelightHelpers
-  // .getBotPoseEstimate_wpiBlue("limelight-outtake");
-  // System.out.printf("using limelight pose %s\n", outtakePoseEstimate);
-
-  // if (outtakePoseEstimate != null) {
-  // swerveDrive.swerveDrivePoseEstimator.addVisionMeasurement(outtakePoseEstimate.pose,
-  // outtakePoseEstimate.timestampSeconds);
-  // }
-  // }
-  // if ( Math.abs(getGyroYawRate()) > 720) {
-  // // skip pose estimate
-  // } else {
-  // // m_DrivePoseEstimator.addVisionMeasurement(
-  // // bestEstimate.pose,
-  // // bestEstimate.timestampSeconds);
-  // }
-  // // drivefield.setRobotPose(m_DrivePoseEstimator.getEstimatedPosition());
-
   private static LimelightHelpers.PoseEstimate filterPoseEstimate(LimelightHelpers.PoseEstimate pose) {
 
     if (pose == null) {
@@ -255,25 +213,6 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     return pose;
-  }
-
-  // returns null if no pose estimate should be used, or returns the best pose
-  // estimate to use
-  private static LimelightHelpers.PoseEstimate pickBestPoseEstimate(LimelightHelpers.PoseEstimate pose1) {
-    if ((pose1 == null || pose1.tagCount == 0)) {
-      // System.out.println("Skipping vision estimate because both are null");
-      return null;
-    } else {
-      return pose1;
-    }
-
-    // if (pose1.avgTagDist < pose2.avgTagDist) {
-    // System.out.println("using intake camera because it is closer");
-    // return pose1;
-    // } else {
-    // System.out.println("using outtake camera because it is closer");
-    // return pose2;
-    // }
   }
 
   @Override
