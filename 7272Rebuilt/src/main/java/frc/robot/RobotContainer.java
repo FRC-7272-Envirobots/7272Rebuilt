@@ -224,12 +224,12 @@ public class RobotContainer {
     driverXbox.pov(90).onTrue(Commands.runOnce(() -> m_shooter.setspeed(6), m_shooter));
     driverXbox.pov(180).onTrue(Commands.runOnce(() -> m_shooter.setspeed(0), m_shooter));
 
-    buttonBoard.button(1).whileTrue(Commands.startEnd(
+    buttonBoard.button(10).whileTrue(Commands.startEnd(
         () -> m_shooter.set_speed_auto(),
         () -> m_shooter.setspeed(0),
         m_shooter));
 
-    buttonBoard.button(2).whileTrue(Commands.startEnd(
+    buttonBoard.button(9).whileTrue(Commands.startEnd(
         () -> m_indexer.feedw(-1, 0.8),
         () -> m_indexer.feed(0, 0),
         m_indexer));
@@ -237,6 +237,24 @@ public class RobotContainer {
     buttonBoard.button(5).whileTrue(drivebase.driveToPose(new Pose2d(2, 2, new Rotation2d())));
 
     buttonBoard.button(14).whileTrue(drivebase.driveTo(AutoDestination.center_field));
+    // drive to RED
+    buttonBoard.button(17).whileTrue(drivebase.driveTo(AutoDestination.red_hub_left));
+    buttonBoard.button(16).whileTrue(drivebase.driveTo(AutoDestination.red_hub_front));
+    buttonBoard.button(20).whileTrue(drivebase.driveTo(AutoDestination.red_hub_right));
+
+    buttonBoard.button(15).whileTrue(drivebase.driveTo(AutoDestination.red_trench_left));
+    buttonBoard.button(18).whileTrue(drivebase.driveTo(AutoDestination.red_trench_right));
+    buttonBoard.button(22).whileTrue(drivebase.driveTo(AutoDestination.red_hump_left));
+    buttonBoard.button(18).whileTrue(drivebase.driveTo(AutoDestination.red_hump_right));
+    // drive to BLUE
+    buttonBoard.button(2).whileTrue(drivebase.driveTo(AutoDestination.blue_hub_left));
+    buttonBoard.button(3).whileTrue(drivebase.driveTo(AutoDestination.blue_hub_front));
+    buttonBoard.button(5).whileTrue(drivebase.driveTo(AutoDestination.blue_hub_right));
+
+    buttonBoard.button(1).whileTrue(drivebase.driveTo(AutoDestination.blue_trench_left));
+    buttonBoard.button(7).whileTrue(drivebase.driveTo(AutoDestination.blue_trench_right));
+    buttonBoard.button(4).whileTrue(drivebase.driveTo(AutoDestination.blue_hump_left));
+    buttonBoard.button(6).whileTrue(drivebase.driveTo(AutoDestination.blue_hump_right));
 
     // // drive to commands
     // new JoystickButton(m_psoc, 10)
