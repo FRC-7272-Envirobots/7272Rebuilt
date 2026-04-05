@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -206,15 +207,8 @@ public class RobotContainer {
     driverXbox.b().whileTrue(new RunCommand(() -> m_intake.intake_run(0.8)));
     driverXbox.a().whileTrue(new RunCommand(() -> m_intake.intake_run(0)));
 
-    driverXbox.leftBumper().whileTrue(Commands.startEnd(
-        () -> m_intake.armmove(0.2),
-        () -> m_intake.armmove(0),
-        m_intake));
-
-    driverXbox.rightBumper().whileTrue(Commands.startEnd(
-        () -> m_intake.armmove(-0.2),
-        () -> m_intake.armmove(0),
-        m_intake));
+    driverXbox.leftBumper().whileTrue(m_intake.setArmPositionUp());
+    driverXbox.rightBumper().whileTrue(m_intake.setArmPositionDown());
 
     driverXbox.pov(0).onTrue(Commands.runOnce(() -> m_shooter.setspeed(10000), m_shooter));
     driverXbox.pov(270).onTrue(Commands.runOnce(() -> m_shooter.set_speed_auto(), m_shooter));
