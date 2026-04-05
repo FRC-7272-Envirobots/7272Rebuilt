@@ -23,13 +23,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LightstripEnvirobots;
-import frc.robot.commands.Routine;
 import frc.robot.subsystems.Indexing_Subsystem;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Lightstrip;
@@ -54,7 +52,6 @@ public class RobotContainer {
   private final Shooter_Subsystem m_shooter = new Shooter_Subsystem(() -> drivebase.getPose());
   private final Intake_Subsystem m_intake = new Intake_Subsystem();
   private final Lightstrip m_Lightstrip0 = new Lightstrip(1);
-  private final Routine m_Routine = new Routine();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
