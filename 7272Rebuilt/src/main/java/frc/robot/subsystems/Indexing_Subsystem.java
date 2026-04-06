@@ -7,7 +7,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,11 +24,7 @@ public class Indexing_Subsystem extends SubsystemBase {
 
   TalonFX m_indexer = new TalonFX(RobotConstants.IndexerCan);
 
-  private Timer timer;
-
   public Indexing_Subsystem() {
-    this.timer = new Timer();
-
     Preferences.initDouble(PREFERENCE_JITTER_ON_SECONDS_KEY, PREFERENCE_JITTER_ON_SECONDS_DEFAULT);
     Preferences.initDouble(PREFERENCE_JITTER_OFF_SECONDS_KEY, PREFERENCE_JITTER_OFF_SECONDS_DEFAULT);
 
@@ -42,6 +37,8 @@ public class Indexing_Subsystem extends SubsystemBase {
     return null;
   }
 
+  private static final double SPINDEXER_SPEED = .9;
+
   public Command runTilCancelledWithJitter() {
     return Commands.defer(() -> {
       double jitterOnTimeSeconds = Preferences.getDouble(PREFERENCE_JITTER_ON_SECONDS_KEY,
@@ -53,20 +50,19 @@ public class Indexing_Subsystem extends SubsystemBase {
           Commands.runOnce(() -> {
             // Speeds to set when both are spinning
             m_indexer.set(.8);
-            m_Spindexer.set(.5);
+            m_Spindexer.set(SPINDEXER_SPEED);
           }),
           Commands.waitSeconds(jitterOnTimeSeconds),
           Commands.runOnce(() -> {
             // Speeds to set when only the spindexer (aka transfer) but not the indexer (aka
             // hopper) is spinning
-            m_indexer.set(0);
-            m_Spindexer.set(.5);
+            m_indexer.set(-.4);
+            m_Spindexer.set(SPINDEXER_SPEED);
           }),
           Commands.waitSeconds(jitterOffTimeSeconds)).finallyDo(() -> {
             // What to do when the command ends -- aka the button is released
-
             m_indexer.set(0);
-            m_Spindexer.set(.5);
+            m_Spindexer.set(0);
           });
     }, Set.of(this));
   }

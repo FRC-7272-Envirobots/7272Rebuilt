@@ -35,8 +35,8 @@ public class Intake_Subsystem extends SubsystemBase {
 
   private final DigitalInput downLimitSwitchDIO = new DigitalInput(5);
 
-  private static final Angle ANGLE_DOWN = Degrees.of(-5);
-  private static final Angle ANGLE_UP = Degrees.of(129);
+  private static final Angle ANGLE_DOWN = Degrees.of(-20);
+  private static final Angle ANGLE_UP = Degrees.of(125);
 
   public Intake_Subsystem() {
     this.armTalon = new TalonFX(RobotConstants.ArmCan);

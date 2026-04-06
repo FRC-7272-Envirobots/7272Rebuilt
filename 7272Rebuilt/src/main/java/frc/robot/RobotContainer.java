@@ -219,7 +219,7 @@ public class RobotContainer {
     driverXbox.leftTrigger(0.3).whileTrue(m_intake.setArmPositionUp());
     driverXbox.rightTrigger(0.3).whileTrue(m_intake.setArmPositionDown());
 
-    driverXbox.rightBumper().onTrue(shootCommand);
+    driverXbox.rightBumper().whileTrue(shootCommand);
 
     driverXbox.pov(0).onTrue(m_shooter.runManualSpeed(10000));
     driverXbox.pov(270).onTrue(m_shooter.autoSpeedForever());
@@ -245,7 +245,7 @@ public class RobotContainer {
     // .toggleOnTrue(new RunCommand(()->indexer.indexer_switch =1))
     // .toggleOnFalse(new RunCommand(()->indexer.indexer_switch =0));
 
-    buttonBoard.button(9).onTrue(shootCommand);
+    buttonBoard.button(9).whileTrue(shootCommand);
 
     // buttonBoard.button(11).whileTrue(Commands.startEnd(
     // () -> m_intake.armmove(-0.2),
@@ -296,7 +296,7 @@ public class RobotContainer {
     // new JoystickButton(m_psoc, 11)
     // .whileTrue(drivebase.driveTo(AutoDestination.red_hub_front));
     //
-    // new JoystickButton(m_psoc, 13)
+    // new JoystickButton(m_psoc , 13)
     // .whileTrue(drivebase.driveTo(AutoDestination.blue_hub_front));
     // new JoystickButton(m_psoc, 12)
     // .whileTrue(drivebase.driveTo(AutoDestination.blue_hub_right));

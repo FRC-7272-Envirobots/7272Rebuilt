@@ -98,7 +98,7 @@ public class Shooter_Subsystem extends SubsystemBase {
   // m_LeftShooter.setControlPrivate(m_request.); }
 
   public final void setspeed(double velocityVoltage) {
-    System.out.printf("Setting shooter speed %s\n", velocityVoltage);
+    // System.out.printf("Setting shooter speed %s\n", velocityVoltage);
     MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(velocityVoltage * -1);
     m_LeftShooter.setControl(m_request);
     m_RightShooter.setControl(m_request);
@@ -148,7 +148,7 @@ public class Shooter_Subsystem extends SubsystemBase {
     // set speed based on distance
     double shootervel = getshooterspeed(Math.abs(distance));
     setspeed(shootervel);
-    System.out.printf("distance : %f shooter speed %f\n", distance, shootervel);
+    // System.out.printf("distance : %f shooter speed %f\n", distance, shootervel);
 
   }
 
