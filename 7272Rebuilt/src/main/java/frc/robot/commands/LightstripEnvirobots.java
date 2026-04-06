@@ -34,8 +34,8 @@ public class LightstripEnvirobots extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   // @Override
   public void execute() {
-    //System.out.println(timer.get());
-   Optional<Alliance> aliance = DriverStation.getAlliance();
+    // System.out.println(timer.get());
+    Optional<Alliance> aliance = DriverStation.getAlliance();
     // System.out.println(timer.get());
     if ((Math.round(timer.get()) % 2) == 0) {
       if (aliance.get() == Alliance.Blue) {
@@ -43,10 +43,9 @@ public class LightstripEnvirobots extends Command {
       } else {
         lightstrip.setColor(Color.RED);
       }
-    }
-    else{
+    } else {
       lightstrip.setColor(Color.green);
-    } 
+    }
   }
 
   // Called once the command ends or is interrupted.
