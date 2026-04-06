@@ -69,9 +69,12 @@ public class Intake_Subsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // if (downLimitSwitchDIO.get()) {
 
-    // }
+    // the limit switch is normally-open with a pull up resistor, so true is when
+    // the limit switch is not pressed, and false means it is pressed
+    if (!downLimitSwitchDIO.get()) {
+      armYAMS.setEncoderPosition(ANGLE_DOWN);
+    }
     SmartDashboard.putBoolean("Intake/At Limit", downLimitSwitchDIO.get());
 
     SmartDashboard.putNumber("Intake/Raw Motor Rotations", armTalon.getPosition().getValueAsDouble());
