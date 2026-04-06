@@ -7,6 +7,7 @@ package frc.robot;
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -29,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LightstripEnvirobots;
-import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Indexing_Subsystem;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Lightstrip;
@@ -54,7 +54,6 @@ public class RobotContainer {
   private final Shooter_Subsystem m_shooter = new Shooter_Subsystem(() -> drivebase.getPose());
   private final Intake_Subsystem m_intake = new Intake_Subsystem();
   private final Lightstrip m_Lightstrip0 = new Lightstrip(1);
-  private final Indexer indexer = new Indexer(m_indexer);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -156,10 +155,6 @@ public class RobotContainer {
     frontCamera.setResolution(640, 480);
     frontCamera.setFPS(30);
 
-    // path planner commands
-    // NamedCommands.registerCommand("lower_intake",m_Routine.ArmDown());
-    // NamedCommands.registerCommand("shoot",m_Routine.ShootCommand(0.8));
-
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -187,7 +182,18 @@ public class RobotContainer {
     // if (autoChooser.getSelected() == null) {
     // RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
     // }
+
+    // path planner commands
+    NamedCommands.registerCommand("lower_intake", m_intake.setArmPositionDown());
+    NamedCommands.registerCommand("run_intake", m_intake.spinIntakeTilCancelled());
+    NamedCommands.registerCommand("shoot", shootCommand);
   }
+
+  private final Command shootCommand = Commands.parallel(
+      m_shooter.autoSpeedTilCanceled(),
+      Commands.sequence(
+          Commands.waitSeconds(0.2),
+          m_indexer.runTilCancelledWithJitter()));
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be
@@ -213,29 +219,12 @@ public class RobotContainer {
     driverXbox.leftTrigger(0.3).whileTrue(m_intake.setArmPositionUp());
     driverXbox.rightTrigger(0.3).whileTrue(m_intake.setArmPositionDown());
 
-    // driverXbox.leftBumper().whileTrue(Commands.startEnd(
-    // () -> m_intake.armmove(0.2),
-    // () -> m_intake.armmove(0),
-    // m_intake));
+    driverXbox.rightBumper().onTrue(shootCommand);
 
-    driverXbox.rightBumper()
-        .onTrue(Commands.sequence(
-            Commands.runOnce(() -> m_shooter.set_speed_auto()),
-            indexer,
-            new RunCommand(() -> indexer.indexer_switch = 1)
-
-        ))
-        .onFalse(Commands.parallel(
-            new RunCommand(() -> indexer.indexer_switch = 0),
-            Commands.runOnce(() -> m_shooter.setspeed(0))));
-    // () -> m_intake.armmove(-0.2),
-    // () -> m_intake.armmove(0),
-    // m_intake));
-
-    driverXbox.pov(0).onTrue(Commands.runOnce(() -> m_shooter.setspeed(10000), m_shooter));
-    driverXbox.pov(270).onTrue(Commands.runOnce(() -> m_shooter.set_speed_auto(), m_shooter));
-    driverXbox.pov(90).onTrue(Commands.runOnce(() -> m_shooter.setspeed(6), m_shooter));
-    driverXbox.pov(180).onTrue(Commands.runOnce(() -> m_shooter.setspeed(0), m_shooter));
+    driverXbox.pov(0).onTrue(m_shooter.runManualSpeed(10000));
+    driverXbox.pov(270).onTrue(m_shooter.autoSpeedForever());
+    driverXbox.pov(90).onTrue(m_shooter.runManualSpeed(6));
+    driverXbox.pov(180).onTrue(m_shooter.stop());
 
     // BUTTON BOARD
 
@@ -256,26 +245,17 @@ public class RobotContainer {
     // .toggleOnTrue(new RunCommand(()->indexer.indexer_switch =1))
     // .toggleOnFalse(new RunCommand(()->indexer.indexer_switch =0));
 
-    buttonBoard.button(9)
-        .onTrue(Commands.sequence(
-            Commands.runOnce(() -> m_shooter.set_speed_auto()),
-            indexer,
-            new RunCommand(() -> indexer.indexer_switch = 1)
+    buttonBoard.button(9).onTrue(shootCommand);
 
-        ))
-        .onFalse(Commands.parallel(
-            new RunCommand(() -> indexer.indexer_switch = 0),
-            Commands.runOnce(() -> m_shooter.setspeed(0))));
+    // buttonBoard.button(11).whileTrue(Commands.startEnd(
+    // () -> m_intake.armmove(-0.2),
+    // () -> m_intake.armmove(0),
+    // m_intake));
 
-    buttonBoard.button(11).whileTrue(Commands.startEnd(
-        () -> m_intake.armmove(-0.2),
-        () -> m_intake.armmove(0),
-        m_intake));
-
-    buttonBoard.button(12).whileTrue(Commands.startEnd(
-        () -> m_intake.armmove(0.2),
-        () -> m_intake.armmove(0),
-        m_intake));
+    // buttonBoard.button(12).whileTrue(Commands.startEnd(
+    // () -> m_intake.armmove(0.2),
+    // () -> m_intake.armmove(0),
+    // m_intake));
 
     // DRIVE TO
 

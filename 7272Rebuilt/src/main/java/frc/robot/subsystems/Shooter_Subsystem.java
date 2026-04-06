@@ -13,6 +13,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 
@@ -70,9 +71,30 @@ public class Shooter_Subsystem extends SubsystemBase {
 
   }
 
+  public Command autoSpeedTilCanceled() {
+    return this.run(() -> set_speed_auto()).finallyDo(() -> setspeed(0));
+  }
+
+  public Command autoSpeedForever() {
+    return runOnce(() -> setDefaultCommand(autoSpeedTilCanceled()));
+  }
+
+  public Command stop() {
+    return runOnce(() -> {
+      this.setspeed(0);
+      this.removeDefaultCommand();
+    });
+  }
+
+  public Command runManualSpeed(double speed) {
+    return this.startEnd(
+        () -> this.setspeed(speed),
+        () -> this.setspeed(0));
+  }
+
   // public void setshooter(AngularVelocity speed) {
   // final MotionMagicVelocityDutyCycle m_request = new
-  // MotionMagicVelocityDutyCycle0;
+  // MotionMagicVelocityDutyCycle0;``
   // m_LeftShooter.setControlPrivate(m_request.); }
 
   public final void setspeed(double velocityVoltage) {
@@ -106,7 +128,7 @@ public class Shooter_Subsystem extends SubsystemBase {
     return shootervel;
   }
 
-  public void set_speed_auto() {
+  private void set_speed_auto() {
 
     // get our position
     Pose2d ourPosition = positionSupplier.get();

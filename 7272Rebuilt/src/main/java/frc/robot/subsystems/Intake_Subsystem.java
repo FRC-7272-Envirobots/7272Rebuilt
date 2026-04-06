@@ -116,8 +116,13 @@ public class Intake_Subsystem extends SubsystemBase {
   // return arm.set(0);
   // }
 
-  public Command intake_run(double speed) {
+  public void intake_run(double speed) {
     m_intakespin.set(speed);
-    return null;
+  }
+
+  public Command spinIntakeTilCancelled() {
+    return this.startEnd(
+        () -> this.intake_run(0.8),
+        () -> this.intake_run(0));
   }
 }
