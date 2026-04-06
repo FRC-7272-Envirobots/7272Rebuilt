@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LightstripEnvirobots;
 import frc.robot.commands.Routine;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Indexing_Subsystem;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Lightstrip;
@@ -55,6 +56,7 @@ public class RobotContainer {
   private final Intake_Subsystem m_intake = new Intake_Subsystem();
   private final Lightstrip m_Lightstrip0 = new Lightstrip(1);
   private final Routine m_Routine = new Routine();
+  private final Indexer indexer = new Indexer(m_indexer);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
@@ -204,37 +206,91 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    driverXbox.y().whileTrue(new RunCommand(() -> m_indexer.feed(-1, 1), m_indexer));
-    driverXbox.x().whileTrue(new RunCommand(() -> m_indexer.feed(0, 0), m_indexer));
-    driverXbox.b().whileTrue(new RunCommand(() -> m_intake.intake_run(0.8)));
-    driverXbox.a().whileTrue(new RunCommand(() -> m_intake.intake_run(0)));
-
-    driverXbox.leftBumper().whileTrue(Commands.startEnd(
-        () -> m_intake.armmove(0.2),
-        () -> m_intake.armmove(0),
-        m_intake));
-
-    driverXbox.rightBumper().whileTrue(Commands.startEnd(
+    // XBOX
+    // driverXbox.y().whileTrue(new RunCommand(() -> m_indexer.feed(-.5, 1),
+    // m_indexer));
+    // driverXbox.x().whileTrue(new RunCommand(() -> m_indexer.feed(0, 0),
+    // m_indexer));
+    driverXbox.y().whileTrue(Commands.startEnd(
         () -> m_intake.armmove(-0.2),
         () -> m_intake.armmove(0),
         m_intake));
+
+    driverXbox.x().whileTrue(Commands.startEnd(
+        () -> m_intake.armmove(0.2),
+        () -> m_intake.armmove(0),
+        m_intake));
+    driverXbox.b().whileTrue(new RunCommand(() -> m_intake.intake_run(0.8)));
+    driverXbox.a().whileTrue(new RunCommand(() -> m_intake.intake_run(0)));
+
+    // driverXbox.leftBumper().whileTrue(Commands.startEnd(
+    // () -> m_intake.armmove(0.2),
+    // () -> m_intake.armmove(0),
+    // m_intake));
+
+    driverXbox.rightBumper()
+        .onTrue(Commands.sequence(
+            Commands.runOnce(() -> m_shooter.set_speed_auto()),
+            indexer,
+            new RunCommand(() -> indexer.indexer_switch = 1)
+
+        ))
+        .onFalse(Commands.parallel(
+            new RunCommand(() -> indexer.indexer_switch = 0),
+            Commands.runOnce(() -> m_shooter.setspeed(0))));
+    // () -> m_intake.armmove(-0.2),
+    // () -> m_intake.armmove(0),
+    // m_intake));
 
     driverXbox.pov(0).onTrue(Commands.runOnce(() -> m_shooter.setspeed(10000), m_shooter));
     driverXbox.pov(270).onTrue(Commands.runOnce(() -> m_shooter.set_speed_auto(), m_shooter));
     driverXbox.pov(90).onTrue(Commands.runOnce(() -> m_shooter.setspeed(6), m_shooter));
     driverXbox.pov(180).onTrue(Commands.runOnce(() -> m_shooter.setspeed(0), m_shooter));
 
+    // BUTTON BOARD
+
     buttonBoard.button(10).whileTrue(Commands.startEnd(
-        () -> m_shooter.set_speed_auto(),
-        () -> m_shooter.setspeed(0),
-        m_shooter));
+        // () -> m_shooter.set_speed_auto(),
+        () -> m_intake.intake_run(0.8),
+        () -> m_intake.intake_run(0),
+        m_intake));
 
-    buttonBoard.button(9).whileTrue(Commands.startEnd(
-        () -> m_indexer.feedw(-1, 0.8),
-        () -> m_indexer.feed(0, 0),
-        m_indexer));
+    // buttonBoard.button(9).whileTrue(Commands.sequence(
+    // m_indexer.feed(.5, 0.8),
+    // m_indexer.feed(.5, 0)))
+    // .whileFalse(Commands.runOnce(
+    // () -> m_indexer.feed(0, 0),
+    // m_indexer));
+    // buttonBoard.button(9)
+    // .onTrue(indexer)
+    // .toggleOnTrue(new RunCommand(()->indexer.indexer_switch =1))
+    // .toggleOnFalse(new RunCommand(()->indexer.indexer_switch =0));
 
-    buttonBoard.button(5).whileTrue(drivebase.driveToPose(new Pose2d(2, 2, new Rotation2d())));
+    buttonBoard.button(9)
+        .onTrue(Commands.sequence(
+            Commands.runOnce(() -> m_shooter.set_speed_auto()),
+            indexer,
+            new RunCommand(() -> indexer.indexer_switch = 1)
+
+        ))
+        .onFalse(Commands.parallel(
+            new RunCommand(() -> indexer.indexer_switch = 0),
+            Commands.runOnce(() -> m_shooter.setspeed(0))));
+
+    buttonBoard.button(11).whileTrue(Commands.startEnd(
+        () -> m_intake.armmove(-0.2),
+        () -> m_intake.armmove(0),
+        m_intake));
+
+    buttonBoard.button(12).whileTrue(Commands.startEnd(
+        () -> m_intake.armmove(0.2),
+        () -> m_intake.armmove(0),
+        m_intake));
+
+    // DRIVE TO
+
+    // buttonBoard.button(5).whileTrue(drivebase.driveToPose(new Pose2d(2, 2, new
+    // Rotation2d())));
 
     buttonBoard.button(14).whileTrue(drivebase.driveTo(AutoDestination.center_field));
     // drive to RED
