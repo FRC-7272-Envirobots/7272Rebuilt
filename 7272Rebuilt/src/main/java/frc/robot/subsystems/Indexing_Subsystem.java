@@ -56,7 +56,7 @@ public class Indexing_Subsystem extends SubsystemBase {
           Commands.runOnce(() -> {
             // Speeds to set when only the spindexer (aka transfer) but not the indexer (aka
             // hopper) is spinning
-            m_indexer.set(-.4);
+            m_indexer.set(0);
             m_Spindexer.set(SPINDEXER_SPEED);
           }),
           Commands.waitSeconds(jitterOffTimeSeconds)).finallyDo(() -> {
@@ -65,6 +65,19 @@ public class Indexing_Subsystem extends SubsystemBase {
             m_Spindexer.set(0);
           });
     }, Set.of(this));
+  }
+
+  public Command unjambUntilCancelled() {
+    return this.startEnd(
+        () -> {
+          m_Spindexer.set(-1);
+          m_indexer.set(-.5);
+        }
+
+        , () -> {
+          m_Spindexer.set(0);
+          m_indexer.set(0);
+        });
   }
 
   // public class Indexer extends Command {
@@ -127,10 +140,6 @@ public class Indexing_Subsystem extends SubsystemBase {
   // }
 
   // }
-
-  public void periodic() {
-    // System.out.println(timer.get());
-  }
 
   public Command feedw(double spispeed, double indspeed) {
     // Commands.waitSeconds(0.5)

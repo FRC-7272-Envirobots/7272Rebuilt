@@ -220,6 +220,7 @@ public class RobotContainer {
     driverXbox.rightTrigger(0.3).whileTrue(m_intake.setArmPositionDown());
 
     driverXbox.rightBumper().whileTrue(shootCommand);
+    driverXbox.start().whileTrue(m_indexer.unjambUntilCancelled());
 
     driverXbox.pov(0).onTrue(m_shooter.runManualSpeed(10000));
     driverXbox.pov(270).onTrue(m_shooter.autoSpeedForever());
