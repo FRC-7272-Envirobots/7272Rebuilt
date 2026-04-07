@@ -146,7 +146,7 @@ public class Shooter_Subsystem extends SubsystemBase {
     double distance = transform.getTranslation().getNorm();
 
     // set speed based on distance
-    double shootervel = getshooterspeed(Math.abs(distance));
+    double shootervel = Math.min(getshooterspeed(Math.abs(distance)) * 1.3, 1.0);
     setspeed(shootervel);
     // System.out.printf("distance : %f shooter speed %f\n", distance, shootervel);
 

@@ -125,7 +125,13 @@ public class Intake_Subsystem extends SubsystemBase {
 
   public Command spinIntakeTilCancelled() {
     return this.startEnd(
-        () -> this.intake_run(0.8),
+        () -> this.intake_run(1.0),
+        () -> this.intake_run(0));
+  }
+
+  public Command reverseIntakeTilCancelled() {
+    return this.startEnd(
+        () -> this.intake_run(-1),
         () -> this.intake_run(0));
   }
 }

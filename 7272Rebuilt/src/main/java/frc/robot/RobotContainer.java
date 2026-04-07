@@ -149,44 +149,24 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
 
-  // private final SendableChooser<Command> autoChooser;
   public RobotContainer() {
     UsbCamera frontCamera = CameraServer.startAutomaticCapture("intake", 0);
     frontCamera.setResolution(640, 480);
     frontCamera.setFPS(30);
 
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
-
-    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    // Set the default auto (do nothing)
-    // autoChooser.setDefaultOption("Do Nothing",
-    // Commands.runOnce(drivebase::zeroGyroWithAlliance)
-    // .andThen(Commands.none()));
-
-    // // Add a simple auto option to have the robot drive forward for 1 second then
-    // // stop
-    // autoChooser.addOption("Drive Forward",
-    // Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2)
-    // .andThen(drivebase.driveForward().withTimeout(1)));
-    // // Put the autoChooser on the SmartDashboard
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    // if (autoChooser.getSelected() == null) {
-    // RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
-    // }
-
     // path planner commands
     NamedCommands.registerCommand("lower_intake", m_intake.setArmPositionDown());
     NamedCommands.registerCommand("run_intake", m_intake.spinIntakeTilCancelled());
     NamedCommands.registerCommand("shoot", shootCommand);
+
+    this.autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   private final Command shootCommand = Commands.parallel(
@@ -220,7 +200,10 @@ public class RobotContainer {
     driverXbox.rightTrigger(0.3).whileTrue(m_intake.setArmPositionDown());
 
     driverXbox.rightBumper().whileTrue(shootCommand);
-    driverXbox.start().whileTrue(m_indexer.unjambUntilCancelled());
+    driverXbox.start().whileTrue(
+        Commands.parallel(
+            m_indexer.unjambUntilCancelled(),
+            m_intake.reverseIntakeTilCancelled()));
 
     driverXbox.pov(0).onTrue(m_shooter.runManualSpeed(10000));
     driverXbox.pov(270).onTrue(m_shooter.autoSpeedForever());
