@@ -9,7 +9,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Preferences;
@@ -92,6 +91,10 @@ public class Shooter_Subsystem extends SubsystemBase {
         () -> this.setspeed(0));
   }
 
+  public Command reverseUntilCanceled() {
+    return this.run(() -> setspeed(-.5)).finallyDo(() -> setspeed(0));
+  }
+
   // public void setshooter(AngularVelocity speed) {
   // final MotionMagicVelocityDutyCycle m_request = new
   // MotionMagicVelocityDutyCycle0;``
@@ -105,7 +108,7 @@ public class Shooter_Subsystem extends SubsystemBase {
 
   }
 
-  public double getshooterspeed(double distance) {
+  public double getshooterspeed(double distanceMeters) {
     // v\left(x\right)=\sqrt{\frac{x^{2}\cdot9.806}{x\sin\left(2\cdot
     // a_{1}\right)-2\cdot h_{1}\cos\left(a_{1}\right)^{2}}}
     // shootervel = Math.sqrt(
@@ -114,18 +117,37 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     // );
 
-    double shooterGravity = Preferences.getDouble(PREFERENCE_KEY_GRAVITY, PREFERENCE_DEFAULT_GRAVITY);
-    double shooterAngle = Preferences.getDouble(PREFERENCE_KEY_ANGLE, PREFERENCE_DEFAULT_ANGLE);
-    double shooterHeight = Preferences.getDouble(PREFERENCE_KEY_HEIGHT, PREFERNCE_DEFAULT_HEIGHT);
+    // double shooterGravity = Preferences.getDouble(PREFERENCE_KEY_GRAVITY,
+    // PREFERENCE_DEFAULT_GRAVITY);
+    // double shooterAngle = Preferences.getDouble(PREFERENCE_KEY_ANGLE,
+    // PREFERENCE_DEFAULT_ANGLE);
+    // double shooterHeight = Preferences.getDouble(PREFERENCE_KEY_HEIGHT,
+    // PREFERNCE_DEFAULT_HEIGHT);
 
-    double numerator = (Math.pow(distance, 2) * shooterGravity);
+    // double numerator = (Math.pow(distance, 2) * shooterGravity);
 
-    double denominator = ((distance * Math.sin(2 * Units.degreesToRadians(shooterAngle))
-        - (2 * shooterHeight
-            * (Math.pow(Math.cos(Units.degreesToRadians(shooterAngle)), 2)))));
+    // double denominator = ((distance * Math.sin(2 *
+    // Units.degreesToRadians(shooterAngle))
+    // - (2 * shooterHeight
+    // * (Math.pow(Math.cos(Units.degreesToRadians(shooterAngle)), 2)))));
 
-    double shootervel = Math.sqrt(numerator / denominator);
-    return shootervel;
+    // double shootervel = Math.sqrt(numerator / denominator);
+    // return shootervel;
+
+    double minSpeed = 6;
+    double maxSpeed = 18;
+
+    double minDistanceMeters = 1;
+    double maxDistanceMeters = 4;
+
+    double distanceClamped = Math.max(minDistanceMeters, Math.min(maxDistanceMeters, distanceMeters));
+    double requestedSpeed = minSpeed
+        + ((maxSpeed - minSpeed) * (distanceClamped - minDistanceMeters) / (maxDistanceMeters - minDistanceMeters));
+
+    // System.out.printf("AutoShoot distance %f speed %f\n", distanceMeters,
+    // requestedSpeed);
+    return requestedSpeed;
+
   }
 
   private void set_speed_auto() {
@@ -146,7 +168,7 @@ public class Shooter_Subsystem extends SubsystemBase {
     double distance = transform.getTranslation().getNorm();
 
     // set speed based on distance
-    double shootervel = Math.min(getshooterspeed(Math.abs(distance)) * 1.3, 1.0);
+    double shootervel = getshooterspeed(Math.abs(distance));
     setspeed(shootervel);
     // System.out.printf("distance : %f shooter speed %f\n", distance, shootervel);
 

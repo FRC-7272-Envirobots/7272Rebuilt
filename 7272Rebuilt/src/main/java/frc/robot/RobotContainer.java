@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -152,7 +153,11 @@ public class RobotContainer {
   public RobotContainer() {
     UsbCamera frontCamera = CameraServer.startAutomaticCapture("intake", 0);
     frontCamera.setResolution(640, 480);
-    frontCamera.setFPS(30);
+    frontCamera.setExposureManual(40);
+    frontCamera.setFPS(10);
+
+    MjpegServer server = (MjpegServer) CameraServer.getServer();
+    server.setCompression(40);
 
     m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
 
@@ -163,7 +168,7 @@ public class RobotContainer {
     // path planner commands
     NamedCommands.registerCommand("lower_intake", m_intake.setArmPositionDown());
     NamedCommands.registerCommand("run_intake", m_intake.spinIntakeTilCancelled());
-    NamedCommands.registerCommand("shoot", shootCommand);
+    NamedCommands.registerCommand("shoot", shootCommandForAuto);
 
     this.autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -172,7 +177,16 @@ public class RobotContainer {
   private final Command shootCommand = Commands.parallel(
       m_shooter.autoSpeedTilCanceled(),
       Commands.sequence(
-          Commands.waitSeconds(0.2),
+          Commands.waitSeconds(0.5),
+          m_indexer.runTilCancelledWithJitter()),
+      Commands.sequence(
+          Commands.waitSeconds(1.5),
+          m_intake.agitateUntilCancelled()));
+
+  private final Command shootCommandForAuto = Commands.parallel(
+      m_shooter.autoSpeedTilCanceled(),
+      Commands.sequence(
+          Commands.waitSeconds(0.5),
           m_indexer.runTilCancelledWithJitter()));
 
   /**
@@ -190,33 +204,45 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    driverXbox.b().whileTrue(new RunCommand(() -> m_intake.intake_run(0.8)));
+    driverXbox.b().whileTrue(new RunCommand(() -> m_intake.intake_run(1)));
     driverXbox.a().whileTrue(new RunCommand(() -> m_intake.intake_run(0)));
 
-    driverXbox.y().whileTrue(new RunCommand(() -> m_indexer.feed(-1, 1), m_indexer));
+    driverXbox.y().whileTrue(m_indexer.runTilCancelledWithJitter());
     driverXbox.x().whileTrue(new RunCommand(() -> m_indexer.feed(0, 0), m_indexer));
 
     driverXbox.leftTrigger(0.3).whileTrue(m_intake.setArmPositionUp());
     driverXbox.rightTrigger(0.3).whileTrue(m_intake.setArmPositionDown());
 
+    driverXbox.leftBumper().onTrue(new RunCommand(() -> drivebase.zeroGyroWithAlliance()));
+
     driverXbox.rightBumper().whileTrue(shootCommand);
     driverXbox.start().whileTrue(
         Commands.parallel(
             m_indexer.unjambUntilCancelled(),
-            m_intake.reverseIntakeTilCancelled()));
+            // m_intake.reverseIntakeTilCancelled()),
+            m_intake.reverseIntakeTilCancelled(),
+            m_shooter.reverseUntilCanceled()));
 
-    driverXbox.pov(0).onTrue(m_shooter.runManualSpeed(10000));
-    driverXbox.pov(270).onTrue(m_shooter.autoSpeedForever());
-    driverXbox.pov(90).onTrue(m_shooter.runManualSpeed(6));
+    driverXbox.pov(0).onTrue(m_shooter.runManualSpeed(18));
+    driverXbox.pov(90).onTrue(m_shooter.runManualSpeed(12));
+    driverXbox.pov(270).onTrue(m_shooter.runManualSpeed(6));
     driverXbox.pov(180).onTrue(m_shooter.stop());
 
     // BUTTON BOARD
 
     buttonBoard.button(10).whileTrue(Commands.startEnd(
         // () -> m_shooter.set_speed_auto(),
-        () -> m_intake.intake_run(0.8),
+        () -> m_intake.intake_run(1),
         () -> m_intake.intake_run(0),
         m_intake));
+    buttonBoard.button(11).whileTrue(m_intake.reverseIntakeTilCancelled());
+
+    buttonBoard.button(12).whileTrue(
+        Commands.parallel(
+            m_indexer.unjambUntilCancelled(),
+            // m_intake.reverseIntakeTilCancelled()),
+            m_intake.reverseIntakeTilCancelled(),
+            m_shooter.reverseUntilCanceled()));
 
     // buttonBoard.button(9).whileTrue(Commands.sequence(
     // m_indexer.feed(.5, 0.8),
@@ -245,7 +271,7 @@ public class RobotContainer {
 
     // buttonBoard.button(5).whileTrue(drivebase.driveToPose(new Pose2d(2, 2, new
     // Rotation2d())));
-
+    buttonBoard.button(13).onTrue(new RunCommand(() -> drivebase.zeroGyroWithAlliance()));
     buttonBoard.button(14).whileTrue(drivebase.driveTo(AutoDestination.center_field));
     // drive to RED
     buttonBoard.button(17).whileTrue(drivebase.driveTo(AutoDestination.red_hub_left));
@@ -333,7 +359,6 @@ public class RobotContainer {
       // // drivebase).repeatedly());
       // driverXbox.rightBumper().onTrue(Commands.none());
     }
-
   }
 
   /**

@@ -66,9 +66,9 @@ public final class Constants {
 
         // blue map
         // hub
-        Map.entry(AutoDestination.blue_hub_left, new Pose2d(2.362, 5.967, Rotation2d.fromDegrees(-40.678))),
-        Map.entry(AutoDestination.blue_hub_front, new Pose2d(2.469, 3.937, Rotation2d.fromDegrees(-0))),
-        Map.entry(AutoDestination.blue_hub_right, new Pose2d(2.362, 1.944, Rotation2d.fromDegrees(30.511))),
+        Map.entry(AutoDestination.blue_hub_left, new Pose2d(2.936, 5.183, Rotation2d.fromDegrees(-39.07))),
+        Map.entry(AutoDestination.blue_hub_front, new Pose2d(2.993, 3.937, Rotation2d.fromDegrees(-0))),
+        Map.entry(AutoDestination.blue_hub_right, new Pose2d(3.082, 3.075, Rotation2d.fromDegrees(29.697))),
         // trench/hump
         Map.entry(AutoDestination.blue_hump_left, new Pose2d(4.680, 5.593, Rotation2d.fromDegrees(0))),
         Map.entry(AutoDestination.blue_hump_right, new Pose2d(4.680, 2.500, Rotation2d.fromDegrees(0))),
@@ -78,8 +78,8 @@ public final class Constants {
         // red map
         // hub
         Map.entry(AutoDestination.red_hub_left, new Pose2d(14.299, 2.180, Rotation2d.fromDegrees(141.302))),
-        Map.entry(AutoDestination.red_hub_front, new Pose2d(14.080, 4.014, Rotation2d.fromDegrees(180))),
-        Map.entry(AutoDestination.red_hub_right, new Pose2d(14.124, 5.565, Rotation2d.fromDegrees(-140.818))),
+        Map.entry(AutoDestination.red_hub_front, new Pose2d(13.338, 4.045, Rotation2d.fromDegrees(180))),
+        Map.entry(AutoDestination.red_hub_right, new Pose2d(13.335, 3.299, Rotation2d.fromDegrees(150))),
         // trench/hump
         Map.entry(AutoDestination.red_hump_left, new Pose2d(11.975, 2.448, Rotation2d.fromDegrees(0))),
         Map.entry(AutoDestination.red_hump_right, new Pose2d(11.975, 5.712, Rotation2d.fromDegrees(0))),
