@@ -46,6 +46,7 @@ public class LightstripEnvirobots extends Command {
     } else {
       lightstrip.setColor(Color.green);
     }
+    
   }
 
   // Called once the command ends or is interrupted.

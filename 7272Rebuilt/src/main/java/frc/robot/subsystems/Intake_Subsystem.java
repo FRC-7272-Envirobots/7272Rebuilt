@@ -36,8 +36,8 @@ public class Intake_Subsystem extends SubsystemBase {
 
   private final DigitalInput downLimitSwitchDIO = new DigitalInput(5);
 
-  private static final Angle ANGLE_DOWN = Degrees.of(-10);
-  private static final Angle ANGLE_UP = Degrees.of(125);
+  private static final Angle ANGLE_DOWN = Degrees.of(-20);
+  private static final Angle ANGLE_UP = Degrees.of(124);
 
   private static final Angle ANGLE_AGITATE_UP = Degrees.of(45);
   private static final Angle ANGLE_AGITATE_DOWN = Degrees.of(20);
@@ -47,7 +47,7 @@ public class Intake_Subsystem extends SubsystemBase {
 
     final SmartMotorControllerConfig armMotorConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.CLOSED_LOOP)
-        .withClosedLoopController(1000, 0, 0, DegreesPerSecond.of(360), DegreesPerSecondPerSecond.of(360))
+        .withClosedLoopController(100, 0, 0, DegreesPerSecond.of(260), DegreesPerSecondPerSecond.of(260))
         // .withClosedLoopRampRate(Seconds.of(.25))
         .withFeedforward(new ArmFeedforward(0, 0, 0, 0))
         // .withSoftLimit(ANGLE_DOWN, ANGLE_UP)

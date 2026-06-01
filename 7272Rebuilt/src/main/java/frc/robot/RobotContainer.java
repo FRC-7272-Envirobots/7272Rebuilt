@@ -159,7 +159,7 @@ public class RobotContainer {
     MjpegServer server = (MjpegServer) CameraServer.getServer();
     server.setCompression(40);
 
-    m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
+    // m_Lightstrip0.setDefaultCommand(new LightstripEnvirobots(m_Lightstrip0));
 
     // Configure the trigger bindings
     configureBindings();
